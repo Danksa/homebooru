@@ -71,10 +71,7 @@ class Post extends HTMLElement {
         this.selectButton = selectButton;
         shadow.appendChild(selectButton);
 
-        const style = document.createElement("link");
-        style.rel = "stylesheet";
-        style.href = "/components/posts-grid-post.css";
-        shadow.appendChild(style);
+        shadow.appendChild(componentStyle("/components/posts-grid-post.css"));
     }
 
     connectedCallback() {
