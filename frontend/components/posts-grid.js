@@ -49,6 +49,7 @@ class PostsGrid extends HTMLElement {
             element.setAttribute("postId", post.id);
             element.setAttribute("thumbnailUrl", post.thumbnail);
             element.setAttribute("type", post.type);
+            element.setAttribute("exportparts", "button");
             this.grid.appendChild(element);
         }
     }
