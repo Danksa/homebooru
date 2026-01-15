@@ -1,4 +1,5 @@
 import { componentStyle } from "../util/attach-style.js";
+import { create } from "../util/template.js";
 
 class FileList extends HTMLElement {
     static SizeUnits = ["B", "kiB", "MiB", "GiB", "TiB"];
@@ -10,31 +11,27 @@ class FileList extends HTMLElement {
         this.fileStates = new Map();
 
         const shadow = this.attachShadow({ mode: "closed" });
-
-        const list = document.createElement("ul");
-        this.list = list;
-        shadow.appendChild(list);
-
         shadow.appendChild(componentStyle("/components/file-list.css"));
+
+        const template = create(`
+            <ul id="list"></ul>
+        `);
+        shadow.append(...template.elements);
+
+        const { list } = template.namedElements;
+        this.list = list;
     }
 
     addFiles(files) {
         for(const file of files) {
-            const entry = document.createElement("li");
-
-            const name = document.createElement("span");
-            name.classList.add("name");
-            name.textContent = file.name;
-            entry.appendChild(name);
-
-            const spacer = document.createElement("span");
-            spacer.classList.add("spacer");
-            entry.appendChild(spacer);
-
-            const size = document.createElement("span");
-            size.textContent = this.formattedSize(file.size);
-            entry.appendChild(size);
-
+            const template = create(`
+                <li>
+                    <span class="name">${file.name}</span>
+                    <span class="spacer"></span>
+                    <span>${this.formattedSize(file.size)}</span>
+                </li>
+            `);
+            const entry = template.elements[0];
             this.list.appendChild(entry);
 
             this.files.add(file);

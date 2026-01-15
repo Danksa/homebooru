@@ -1,12 +1,12 @@
 import { maxPageQuicklinks, showFirstPage, showLastPage } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { create } from "../util/template.js";
 
 class PostsNav extends HTMLElement {
     constructor() {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
-
         shadow.appendChild(componentStyle("/components/posts-nav.css"));
 
         const gridId = this.getAttribute("grid");
@@ -20,8 +20,6 @@ class PostsNav extends HTMLElement {
     }
 
     populate(shadow, pagination) {
-        const row = document.createElement("nav");
-
         const { start, total, step } = pagination;
         const pageCount = Math.ceil(total / step);
         const currentPage = Math.floor(start / step);
@@ -29,54 +27,32 @@ class PostsNav extends HTMLElement {
         const startPage = Math.max(currentPage - pageOffset, 0);
         const shownCount = Math.min(maxPageQuicklinks, pageCount - startPage);
 
-        const prevButton = document.createElement("a");
-        if(start > 0)
-            prevButton.href = this.pageUrl(Math.max(start - step, 0).toFixed(0));
-        prevButton.textContent = "<";
-        row.appendChild(prevButton);
+        const pages = Array.from({ length: shownCount }, (_, i) => startPage + i);
 
+        let firstPageLink = "";
         if(showFirstPage && startPage > 0) {
-            const button = document.createElement("a");
-            button.textContent = "1";
-            button.href = this.pageUrl(0);
-            row.appendChild(button);
-
-            const dots = document.createElement("span");
-            dots.textContent = "…";
-            row.appendChild(dots);
+            firstPageLink = `
+                <a href="${this.pageUrl(0)}">1</a>
+                <span>…</span>
+            `;
         }
 
-        for(let i = 0; i < shownCount; ++i) {
-            const page = startPage + i;
-
-            const button = document.createElement("a");
-            button.textContent = (page + 1).toFixed(0);
-            if(page !== currentPage)
-                button.href = this.pageUrl(start + (page - currentPage) * step);
-            else
-                button.classList.add("current");
-            row.appendChild(button);
-        }
-
+        let lastPageLink = "";
         const lastShownPage = startPage + shownCount;
         if(showLastPage && lastShownPage < pageCount) {
-            const dots = document.createElement("span");
-            dots.textContent = "…";
-            row.appendChild(dots);
-
-            const button = document.createElement("a");
-            button.textContent = pageCount.toFixed(0);
-            button.href = this.pageUrl(start + (pageCount - currentPage - 1) * step);
-            row.appendChild(button);
+            lastPageLink = `<span>…</span><a href="${this.pageUrl(start + (pageCount - currentPage - 1) * step)}">${pageCount.toFixed(0)}</a>`;
         }
 
-        const nextButton = document.createElement("a");
-        if(start + step < total)
-            nextButton.href = this.pageUrl((start + step).toFixed(0));
-        nextButton.textContent = ">";
-        row.appendChild(nextButton);
-
-        shadow.appendChild(row);
+        const template = create(`
+            <nav>
+                <a ${start > 0 ? `href="${this.pageUrl(Math.max(start - step, 0).toFixed(0))}"` : ""}>&lt;</a>
+                ${firstPageLink.trim()}
+                ${pages.map(page => `<a ${page !== currentPage ? `href="${this.pageUrl(start + (page - currentPage) * step)}"` : `class="current"`}>${(page + 1).toFixed(0)}</a>`).join("")}
+                ${lastPageLink.trim()}
+                <a ${start + step < total ? `href="${this.pageUrl((start + step).toFixed(0))}"` : ""}">&gt;</a>
+            </nav>
+        `);
+        shadow.append(...template.elements);
     }
 
     pageUrl(start) {

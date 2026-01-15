@@ -1,7 +1,8 @@
 import { componentStyle } from "../util/attach-style.js";
 import { debounced } from "../util/debounce.js";
-import { TagSuggestionBox } from "./tag-suggestion-box.js";
 import { fetchSuggestions } from "../util/suggestions.js";
+import { create } from "../util/template.js";
+import "./tag-suggestion-box.js";
 
 class SearchInput extends HTMLElement {
     #inputKeyListener;
@@ -12,9 +13,25 @@ class SearchInput extends HTMLElement {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
+        shadow.appendChild(componentStyle("/components/search-input.css"));
 
-        const suggestions = new TagSuggestionBox();
+        const template = create(`
+                <div class="container" style="visibility: hidden">
+                    <input id="input" type="text" part="input text" placeholder="Filter by tags" autocomplete="off" />
+                    <tag-suggestion-box id="suggestions"></tag-suggestion-box>
+                    <button id="searchButton" type="button" part="button">Search</button>
+                </div>
+        `);
+        shadow.append(...template.elements);
+
+        const { input, searchButton, suggestions } = template.namedElements;
+
         this.suggestions = suggestions;
+        this.input = input;
+
+        searchButton.addEventListener("click", () => {
+            this.search(input.value);
+        }, { once: true });
 
         this.#suggestionsFocusListener = () => {
             input.focus();
@@ -22,12 +39,6 @@ class SearchInput extends HTMLElement {
         this.#suggestionListener = (event) => {
             this.insertSuggestion(event.detail);
         };
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.part = "input text";
-        input.placeholder = "Filter by tags";
-        input.autocomplete = "off";
 
         this.#inputKeyListener = (event) => {
             if(event.key === "Enter") {
@@ -40,7 +51,6 @@ class SearchInput extends HTMLElement {
                 suggestions.clear();
             }
         };
-        this.input = input;
 
         const debouncedRequest = debounced(this.requestSuggestions.bind(this), 500);
 
@@ -51,25 +61,6 @@ class SearchInput extends HTMLElement {
                 debouncedRequest(words[words.length - 1]);
             }
         });
-
-        const searchButton = document.createElement("button");
-        searchButton.type = "button";
-        searchButton.textContent = "Search";
-        searchButton.part = "button";
-        searchButton.addEventListener("click", () => {
-            this.search(input.value);
-        }, { once: true });
-        
-        const container = document.createElement("div");
-        container.style.visibility = "hidden";
-        container.classList.add("container");
-        container.appendChild(input);
-        container.appendChild(suggestions);
-        container.appendChild(searchButton);
-        container.appendChild(suggestions);
-        shadow.appendChild(container);
-
-        shadow.appendChild(componentStyle("/components/search-input.css"));
 
         const urlParams = new URLSearchParams(window.location.search);
         const query = urlParams.get("query") ?? "";

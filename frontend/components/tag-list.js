@@ -1,16 +1,20 @@
 import { componentStyle } from "../util/attach-style.js";
+import { create } from "../util/template.js";
 
 export class TagList extends HTMLElement {
     constructor() {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
-
-        const list = document.createElement("ul");
-        this.list = list;
-        shadow.appendChild(list);
-
         shadow.appendChild(componentStyle("/components/tag-list.css"));
+
+        const template = create(`
+            <ul id="list"></ul>
+        `);
+        shadow.append(...template.elements);
+
+        const { list } = template.namedElements;
+        this.list = list;        
     }
 
     set tags(tags) {
@@ -27,32 +31,21 @@ export class TagList extends HTMLElement {
         const showRemove = this.hasAttribute("show-remove");
 
         for(const tag of tags) {
-            const element = document.createElement("li");
-
-            const link = document.createElement("a");
-            link.href = `/posts.html?query=${tag.name}`;
-            link.textContent = tag.name;
-            element.appendChild(link);
-
-            if(showEdit) {
-                const editLink = document.createElement("a");
-                editLink.classList.add("edit");
-                editLink.href = `/tag.html?id=${tag.id.toFixed(0)}`;
-                editLink.textContent = "✏️";
-                element.appendChild(editLink);
-            }
+            const template = create(`
+                <li>
+                    <a href="/posts.html?query=${tag.name}">${tag.name}</a>
+                    ${showEdit ? `<a class="edit" href="/tag.html?id=${tag.id.toFixed(0)}">✏️</a>` : ""}
+                    ${showRemove ? `<button id="removeButton" part="button negative">Remove</button>` : ""}
+                </li>
+            `);
+            this.list.append(...template.elements);
 
             if(showRemove) {
-                const removeButton = document.createElement("button");
-                removeButton.part = "button negative";
-                removeButton.textContent = "Remove";
+                const { removeButton } = template.namedElements;
                 removeButton.addEventListener("click", () => {
                     this.dispatchEvent(new CustomEvent("remove", { detail: tag }));
                 });
-                element.appendChild(removeButton);
             }
-
-            this.list.appendChild(element);
         }
     }
 

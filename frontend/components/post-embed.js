@@ -1,5 +1,6 @@
 import { backendUrl, postBasePath } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { create } from "../util/template.js";
 import { TagList } from "./tag-list.js";
 
 class PostEmbed extends HTMLElement {
@@ -7,21 +8,19 @@ class PostEmbed extends HTMLElement {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
-
-        const container = document.createElement("div");
-        container.classList.add("container");
-        container.addEventListener("click", () => {
-            container.classList.toggle("full");
-
-            if(!container.classList.contains("full")) {
-                document.body.style.zoom = "100%";
-            }
-        });
-        this.container = container;
-
         shadow.appendChild(componentStyle("/components/post-embed.css"));
 
-        shadow.appendChild(container);
+        const template = create(`
+            <div id="container" class="container"></div>
+        `);
+        shadow.append(...template.elements);
+
+        const { container } = template.namedElements;
+
+        container.addEventListener("click", () => {
+            container.classList.toggle("full");
+        });
+        this.container = container;
     }
 
     connectedCallback() {

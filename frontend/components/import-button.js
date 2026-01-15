@@ -1,15 +1,20 @@
 import { backendUrl } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { create } from "../util/template.js";
 
 class ImportButton extends HTMLElement {
     constructor() {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
+        shadow.appendChild(componentStyle("/components/import-button.css"));
 
-        const button = document.createElement("button");
-        button.textContent = "Process imports";
-        button.part = "button";
+        const template = create(`
+            <button id="button" part="button">Process imports</button>
+        `);
+        shadow.append(...template.elements);
+
+        const { button } = template.namedElements;
         button.addEventListener("click", async () => {
             try {
                 const response = await fetch(`${backendUrl}/posts/import`, { method: "post" });
@@ -22,9 +27,6 @@ class ImportButton extends HTMLElement {
                 alert(`Could not start import: ${error}`)
             }
         });
-        shadow.appendChild(button);
-
-        shadow.appendChild(componentStyle("/components/import-button.css"));
     }
 }
 

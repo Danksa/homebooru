@@ -1,7 +1,8 @@
 import { massTag } from "../state/mass-tag.js";
 import { componentStyle } from "../util/attach-style.js";
-import { AddTagInput } from "./add-tag-input.js";
-import { TagList } from "./tag-list.js";
+import { create } from "../util/template.js";
+import "./add-tag-input.js";
+import "./tag-list.js";
 
 class MassTagMenu extends HTMLElement {
     #actionButtonListener;
@@ -15,11 +16,30 @@ class MassTagMenu extends HTMLElement {
         super();
         
         const shadow = this.attachShadow({ mode: "open" });
+        shadow.appendChild(componentStyle("/components/mass-tag-menu.css"));
 
-        const addTagInput = new AddTagInput();
-        addTagInput.setAttribute("exportparts", "button, input, text");
+        const template = create(`
+            <add-tag-input id="addTagInput" exportparts="button, input, text"></add-tag-input>
+            <tag-list id="tagList" show-remove exportparts="button, input, text"></tag-list>
+            <div class="button-row">
+                <button id="cancelButton" part="button">Cancel</button>
+                <button id="actionButton" part="button"></button>
+            </div>
+        `);
+        shadow.append(...template.elements);
+
+        const { addTagInput, tagList, actionButton, cancelButton } = template.namedElements;
+
         this.addTagInput = addTagInput;
-        shadow.appendChild(addTagInput);
+
+        tagList.tags = [];
+        this.tagList = tagList;
+
+        this.actionButton = actionButton;
+        this.#updateActionButton(massTag.active());
+        
+        cancelButton.disabled = !massTag.active();
+        this.cancelButton = cancelButton;
 
         this.#tags = [];
 
@@ -38,13 +58,6 @@ class MassTagMenu extends HTMLElement {
                 tagList.tags = this.#tags.map(tag => ({ name: tag }));
             }
         };
-
-        const tagList = new TagList();
-        tagList.toggleAttribute("show-remove", true);
-        tagList.tags = [];
-        tagList.setAttribute("exportparts", "button, input, text");
-        this.tagList = tagList;
-        shadow.appendChild(tagList);
 
         this.#actionButtonListener = () => {
             if(massTag.active()) {
@@ -68,25 +81,6 @@ class MassTagMenu extends HTMLElement {
                 tagList.tags = this.#tags;
             }
         };
-
-        const actionButton = document.createElement("button");
-        actionButton.part = "button";
-        this.actionButton = actionButton;
-        this.#updateActionButton(massTag.active());
-        
-        const cancelButton = document.createElement("button");
-        cancelButton.part = "button";
-        cancelButton.textContent = "Cancel";
-        cancelButton.disabled = !massTag.active();
-        this.cancelButton = cancelButton;
-
-        const buttonRow = document.createElement("div");
-        buttonRow.classList.add("button-row");
-        buttonRow.appendChild(cancelButton);
-        buttonRow.appendChild(actionButton);
-        shadow.appendChild(buttonRow);
-
-        shadow.appendChild(componentStyle("/components/mass-tag-menu.css"));
     }
 
     connectedCallback() {

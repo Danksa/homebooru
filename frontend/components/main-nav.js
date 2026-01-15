@@ -1,4 +1,5 @@
 import { componentStyle } from "../util/attach-style.js";
+import { create } from "../util/template.js";
 
 class MainNav extends HTMLElement {
     static Pages = [
@@ -11,32 +12,22 @@ class MainNav extends HTMLElement {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
-
-        const logo = document.createElement("div");
-        logo.classList.add("logo");
-
-        const logoLink = document.createElement("a");
-        logoLink.href = "/index.html";
-        logoLink.appendChild(logo);
-        shadow.appendChild(logoLink);
-        
-        const currentUrl = window.location.pathname;
-        const list = document.createElement("ul");
-        list.style.visibility = "hidden";
-        for(const [title, url] of MainNav.Pages) {
-            const entry = document.createElement("li");
-            if(currentUrl === url)
-                entry.classList.add("current");
-
-            const link = document.createElement("a");
-            link.href = url;
-            link.textContent = title;
-            entry.appendChild(link);
-            list.appendChild(entry);
-        }
-        shadow.appendChild(list);
-
         shadow.appendChild(componentStyle("/components/main-nav.css"));
+
+        const currentUrl = window.location.pathname;
+        const template = create(`
+            <a href="/index.html">
+                <div class="logo"></div>
+            </a>
+            <ul style="visibility: hidden">
+                ${MainNav.Pages.map(([title, url]) => `
+                    <li class="${currentUrl === url ? "current" : ""}">
+                        <a href="${url}">${title}</a>
+                    </li>
+                `).join("")}
+            </ul>
+        `);
+        shadow.append(...template.elements);
     }
 }
 

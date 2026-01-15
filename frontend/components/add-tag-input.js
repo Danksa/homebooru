@@ -2,6 +2,7 @@ import { componentStyle } from "../util/attach-style.js";
 import { TagSuggestionBox } from "./tag-suggestion-box.js";
 import { debounced } from "../util/debounce.js";
 import { fetchSuggestions } from "../util/suggestions.js";
+import { create } from "../util/template.js";
 
 export class AddTagInput extends HTMLElement {
     #inputKeyListener;
@@ -12,20 +13,24 @@ export class AddTagInput extends HTMLElement {
         super();
 
         const shadow = this.attachShadow({ mode: "closed" });
+        shadow.appendChild(componentStyle("/components/add-tag-input.css"));
 
-        const row = document.createElement("div");
-        row.classList.add("row");
+        const template = create(`
+            <div class="row">
+                <input id="nameInput" type="text" placeholder="Enter tag name" part="input text" />
+                <button id="addButton" type="button" part="button">+</button>
+                <tag-suggestion-box id="suggestions"></tag-suggestion-box>
+            </div>
+        `);
+        shadow.append(...template.elements);
 
-        const nameInput = document.createElement("input");
-        nameInput.type = "text";
-        nameInput.placeholder = "Enter tag name";
-        nameInput.part = "input text";
+        const { nameInput, addButton, suggestions } = template.namedElements;
+
         nameInput.addEventListener("keydown", (event) => {
             if(event.key === "Enter")
                 this.onInput(nameInput.value);
         });
         this.nameInput = nameInput;
-        row.appendChild(nameInput);
 
         this.#inputKeyListener = (event) => {
             if(event.key === "Enter") {
@@ -46,18 +51,11 @@ export class AddTagInput extends HTMLElement {
             }
         });
 
-        const addButton = document.createElement("button");
-        addButton.type = "button";
-        addButton.textContent = "+";
-        addButton.part = "button";
         addButton.addEventListener("click", () => {
             this.onInput(nameInput.value);
         });
-        row.appendChild(addButton);
 
-        const suggestions = new TagSuggestionBox();
         this.suggestions = suggestions;
-        row.appendChild(suggestions);
 
         this.#suggestionsFocusListener = () => {
             nameInput.focus();
@@ -65,10 +63,6 @@ export class AddTagInput extends HTMLElement {
         this.#suggestionListener = (event) => {
             nameInput.value = event.detail;
         };
-
-        shadow.appendChild(row);
-
-        shadow.appendChild(componentStyle("/components/add-tag-input.css"));
     }
 
     connectedCallback() {
