@@ -1,5 +1,5 @@
 // data stuff
-export const backendUrl = "http://10.0.10.100:3000";
+export const backendUrl = "http://localhost:3000";
 export const postBasePath = "/data/posts";
 export const thumbnailBasePath = "/data/thumbnails";
 
