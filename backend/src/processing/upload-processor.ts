@@ -5,7 +5,7 @@ import { rename, unlink } from "fs/promises";
 import { imageMagick } from "./imagemagick.js";
 import { Thumbnail } from "./thumbnail.js";
 import { PostType, postType } from "../data/post-type.js";
-import { Size, ThumbnailGenerator } from "./thumbnail-generator.js";
+import { ThumbnailGenerator } from "./thumbnail-generator.js";
 import { ffmpeg } from "./ffmpeg.js";
 
 const thumbnailProcessors = {
@@ -14,8 +14,6 @@ const thumbnailProcessors = {
 } satisfies Record<PostType, ThumbnailGenerator>;
 
 class UploadProcessor {
-    static readonly ThumbnailSize: Size = { width: 300, height: 300 };
-
     async process(filePath: string, extension: string): Promise<void> {
         let type: PostType;
         try {
@@ -38,7 +36,7 @@ class UploadProcessor {
         const thumbnailFileName = Thumbnail.name(postId);
         const thumbnailPath = join(config.thumbnailDirectory, thumbnailFileName);
 
-        await thumbnailProcessors[type](postPath, thumbnailPath, UploadProcessor.ThumbnailSize);
+        await thumbnailProcessors[type](postPath, thumbnailPath, config.ThumbnailSize);
     }
 }
 

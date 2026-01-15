@@ -1,6 +1,9 @@
+import { Size } from "./processing/thumbnail-generator.js";
 
 class Config {
     private readonly dataDirectory: string;
+
+    readonly ThumbnailSize: Size = { width: 300, height: 300 };
 
     constructor() {
         this.dataDirectory = process.env.DATA_DIRECTORY ?? "./data";
