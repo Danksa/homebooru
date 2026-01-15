@@ -3,8 +3,6 @@ import { postSelection } from "../state/post-selection.js";
 import { componentStyle } from "../util/attach-style.js";
 
 class PostsGrid extends HTMLElement {
-    static observedAttributes = ["show-selection"];
-
     constructor() {
         super();
 
@@ -35,12 +33,6 @@ class PostsGrid extends HTMLElement {
             this.dispatchEvent(new CustomEvent("pagination", { detail: this.pagination }));
         };
         fetchPosts();
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        if(name === "show-selection") {
-
-        }
     }
 
     populate(posts) {
