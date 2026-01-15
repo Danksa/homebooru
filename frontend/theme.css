@@ -1,0 +1,11 @@
+html {
+    --foreground: #d39f9f;
+    --background: #3e323b;
+    --hover: #ffdcd5;
+    --positive: #449f4c;
+    --positive-contrast: #ffffff;
+    --negative: #943030;
+    --negative-contrast: #ffffff;
+    --disabled: #647275;
+    --roundness: 4px;
+}
