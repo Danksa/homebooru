@@ -1,0 +1,142 @@
+html {
+    --foreground: #d39f9f;
+    --background: #3e323b;
+    --hover: #ffdcd5;
+    --positive: #449f4c;
+    --positive-contrast: #ffffff;
+    --negative: #943030;
+    --negative-contrast: #ffffff;
+    --disabled: #647275;
+    --roundness: 4px;
+
+    height: 100%;
+    font-family: sans-serif;
+
+    color: var(--foreground);
+    background: var(--background);
+
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1em;
+
+    min-height: 100%;
+
+    padding: 0;
+    padding-bottom: 1em;
+    margin: 0;
+
+    box-sizing: border-box;
+}
+
+body > header {
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    
+    padding: 0 1em 0 1em;
+
+    background-color: var(--background);
+
+    box-shadow: 0px 0px 8px black;
+
+    z-index: 2;
+}
+
+main {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+
+    padding: 0 1em;
+}
+
+footer {
+    padding: 0 1em;
+}
+
+aside {
+    padding: 0 1em;
+
+    header {
+        font-weight: bold;
+    }
+}
+
+.full, ::part(full) {
+    width: 100%;
+}
+
+button, ::part(button), .button {
+    --fg: var(--background);
+    --bg: var(--foreground);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: var(--fg);
+    background-color: var(--bg);
+
+    padding: 0.5em 1em;
+
+    border: 2px solid transparent;
+    border-radius: var(--roundness);
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    &.negative {
+        --fg: var(--negative-contrast);
+        --bg: var(--negative);
+    }
+
+    &:hover {
+        border-color: var(--hover);
+    }
+
+    &:disabled {
+        color: var(--bg);
+        background-color: transparent;
+        border-color: var(--bg);
+        cursor: default;
+    }
+}
+
+::part(button):hover {
+    border-color: var(--hover);
+}
+
+::part(button):disabled {
+    color: var(--bg);
+    background-color: transparent;
+    border-color: var(--bg);
+    cursor: default;
+}
+
+::part(button negative) {
+    --fg: var(--negative-contrast);
+    --bg: var(--negative);
+}
+
+input[type="text"], ::part(input text) {
+    color: var(--foreground);
+    background-color: var(--background);
+    
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+
+    padding: 0.5em;
+}

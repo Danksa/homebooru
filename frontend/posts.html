@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Posts - Homebooru</title>
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href="base.css" />
+
+        <style>
+            body {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                grid-template-areas:
+                    "header"
+                    "grid";
+
+                position: relative;
+
+                > header {
+                    grid-area: header;
+                }
+
+                > main {
+                    grid-area: grid;
+                    justify-content: flex-start;
+
+                    margin-bottom: 2em;
+                }
+
+                > aside {
+                    display: none;
+
+                    grid-area: grid;
+                    position: absolute;
+                    inset: 0;
+
+                    background-color: var(--background);
+
+                    &.shown {
+                        display: initial;
+                    }
+                }
+            }
+
+            #masstag-toggle {
+                position: absolute;
+                bottom: 1em;
+                left: 1em;
+
+                box-shadow: 2px 2px 4px black;
+            }
+
+            @media (min-width: 1000px) and (min-aspect-ratio: 1) {
+                body {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    grid-template-rows: auto 1fr;
+                    grid-template-areas:
+                        "header header"
+                        "sidebar grid";
+
+                    > header {
+                        grid-area: header;
+                    }
+
+                    > main {
+                        grid-area: grid;
+
+                        margin-bottom: initial;
+                    }
+
+                    > aside {
+                        display: initial;
+                        position: initial;
+
+                        grid-area: sidebar;
+                    }
+                }
+
+                #masstag-toggle {
+                    display: none;
+                }
+
+                header > search {
+                    width: 100%;
+                    max-width: 600px;
+                    justify-self: center;
+                }
+            }
+
+            header {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 1fr 1fr;
+                grid-template-areas:
+                    "nav"
+                    "search"
+                    "page";
+
+                > nav {
+                    grid-area: nav;
+                }
+
+                > search {
+                    grid-area: search;
+                }
+
+                > posts-nav {
+                    grid-area: page;
+                }
+
+                @media (min-width: 800px) {
+                    grid-template-columns: auto 1fr;
+                    grid-template-rows: 1fr 0;
+                    grid-template-areas:
+                        "nav search"
+                        "page page";
+
+                    > posts-nav {
+                        display: none;
+                    }
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav>
+                <main-nav></main-nav>
+            </nav>
+            <search>
+                <search-input></search-input>
+            </search>
+            <posts-nav grid="posts"></posts-nav>
+        </header>
+        <main>
+            <posts-grid id="posts">Loading...</posts-grid>
+            <posts-nav style="width: 100%" grid="posts"></posts-nav>
+        </main>
+        <aside id="masstag-menu">
+            <h1>Mass Tag</h1>
+            <mass-tag-menu></mass-tag-menu>
+        </aside>
+        <button id="masstag-toggle" type="button">🏷️</button>
+
+        <script type="module" src="components/main-nav.js" async></script>
+        <script type="module" src="components/search-input.js" async></script>
+        <script type="module" src="components/posts-grid.js" async></script>
+        <script type="module" src="components/posts-nav.js" async></script>
+        <script type="module" src="components/mass-tag-menu.js" async></script>
+        <script type="module" src="posts.js" async></script>
+    </body>
+</html>

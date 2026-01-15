@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -e
+
+backendInstallPath="/opt/homebooru"
+frontendInstallPath="/srv/www/homebooru"
+dataPath="/mnt" # Where the posts, tags etc. are stored
+
+echo "Please enter the URL your server will use (e.g. http://localhost or http://homebooru.mylocaldomain.internal):"
+read serverUrl
+
+if [[ -z "$serverUrl" ]]; then
+    echo "Invalid server URL, exiting"
+fi
+
+echo Building backend
+
+pushd backend &>/dev/null
+npm install
+npm run build
+popd &>/dev/null
+
+echo Installing backend
+sudo mkdir -p "$backendInstallPath"
+sudo cp -r backend/build/* "$backendInstallPath"
+
+echo Adding service
+sudo cp homebooru.service /etc/systemd/system
+
+sudo sed -i 's|^Environment=|Environment="DATA_DIRECTORY='"$dataPath"'"|' '/etc/systemd/system/homebooru.service'
+
+echo Enabling and starting service
+sudo systemctl enable --now homebooru.service
+
+echo Installing frontend
+sudo mkdir -p "$frontendInstallPath"
+sudo cp -r frontend/* "$frontendInstallPath"
+sudo ln -s "$dataPath" "$frontendInstallPath/data"
+sudo sed -i 's|^export const backendUrl = .*|export const backendUrl = "'"$serverUrl"':3000"|' "$backendInstallPath/config.js"
+
+echo Setting up nginx
+sudo cp homebooru.conf /etc/nginx/sites-available
+sudo ln -s /etc/nginx/sites-available/homebooru.conf /etc/nginx/sites-enabled/homebooru.conf
+
+echo Restarting nginx
+sudo systemctl restart nginx

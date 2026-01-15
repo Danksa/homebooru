@@ -1,0 +1,56 @@
+.container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0.5em;
+
+    position: relative;
+
+    visibility: visible !important;
+}
+
+input[type=text] {
+    flex-grow: 1;
+}
+
+.suggestions {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    gap: 0.5em;
+
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    padding: 0.5em 1em;
+    margin: 0;
+
+    background-color: var(--background);
+
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+
+    list-style: none;
+
+    visibility: collapse;
+
+    &:has(li) {
+        visibility: visible;
+    }
+
+    li {
+        cursor: pointer;
+
+        &.selected {
+            color: var(--background);
+            background-color: var(--foreground);
+        }
+
+        &:hover {
+            color: var(--background);
+            background-color: var(--hover);
+        }
+    }
+}

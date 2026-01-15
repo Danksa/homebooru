@@ -1,0 +1,44 @@
+:host {
+    position: absolute;
+    top: 100%;
+    left: 0;
+}
+
+ul {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    gap: 0.5em;
+
+    padding: 0.5em 1em;
+    margin: 0;
+
+    background-color: var(--background);
+
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+
+    list-style: none;
+
+    box-sizing: 0px 2px 2px black;
+
+    visibility: collapse;
+
+    &:has(li) {
+        visibility: visible;
+    }
+
+    li {
+        cursor: pointer;
+
+        &.selected {
+            color: var(--background);
+            background-color: var(--foreground);
+        }
+
+        &:hover {
+            color: var(--background);
+            background-color: var(--hover);
+        }
+    }
+}

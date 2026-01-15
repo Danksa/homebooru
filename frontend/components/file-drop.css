@@ -1,0 +1,52 @@
+:host([disabled]) {
+    label {
+        color: var(--disabled);
+        border-color: var(--disabled);
+        cursor: default;
+    }
+
+    .icon {
+        filter: saturate(0.0);
+    }
+}
+
+label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 1em;
+
+    border: 2px dashed var(--foreground);
+
+    cursor: pointer;
+
+    &.dragging {
+        color: var(--negative-contrast);
+        border-color: var(--negative-contrast);
+        background-color: var(--negative);
+        cursor: no-drop;
+
+        &.valid {
+            color: var(--positive-contrast);
+            border-color: var(--positive-contrast);
+            background-color: var(--positive);
+            cursor: copy;
+        }
+    }
+
+    .content {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        gap: 1em;
+
+        > .icon {
+            font-size: 60px;
+        }
+    }
+
+    > input {
+        display: none;
+    }
+}

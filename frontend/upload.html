@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Upload - Homebooru</title>
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href="base.css" />
+    </head>
+    <body>
+        <header>
+            <nav>
+                <main-nav></main-nav>
+            </nav>
+        </header>
+        <main>
+            <file-drop id="drop"></file-drop>
+            <file-list id="list"></file-list>
+            <button id="upload" type="button" style="width: 100%" disabled>Upload all</button>
+        </main>
+        <footer>
+            <import-button style="width: 100%"></import-button>
+        </footer>
+
+        <script type="module" src="components/main-nav.js" async type="module"></script>
+        <script type="module" src="components/import-button.js" async type="module"></script>
+        <script type="module" src="components/file-drop.js" async type="module"></script>
+        <script type="module" src="components/file-list.js" async type="module"></script>
+
+        <script type="module" src="upload.js" async type="module"></script>
+    </body>
+</html>

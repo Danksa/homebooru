@@ -1,0 +1,16 @@
+[Unit]
+Description=homebooru backend server
+After=network.target
+
+[Service]
+Type=exec
+Environment=
+ExecStart=node /opt/homebooru/index.js
+WorkingDirectory=/opt/homebooru
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=homebooru
+
+[Install]
+WantedBy=default.target
+RequiredBy=network.target

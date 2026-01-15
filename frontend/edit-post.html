@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Edit Post - Homebooru</title>
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href="base.css" />
+
+        <style>
+            aside {
+                display: flex;
+                flex-flow: column nowrap;
+                gap: 1em;
+            }
+            @media (min-width: 1000px) and (min-aspect-ratio: 1) {
+                body {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    grid-template-rows: auto 1fr;
+                    grid-template-areas:
+                        "header header"
+                        "sidebar post";
+
+                    max-height: 100%;
+
+                    > header {
+                        grid-area: header;
+                    }
+
+                    > main {
+                        grid-area: post;
+
+                        max-height: 100%;
+
+                        overflow: hidden;
+                    }
+
+                    > aside {
+                        grid-area: sidebar;
+                    }
+                }
+
+                post-embed {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav>
+                <main-nav></main-nav>
+            </nav>
+        </header>
+        <main>
+            <post-embed tag-list="tags">Loading...</post-embed>
+        </main>
+        <aside>
+            <header>
+                Tags
+            </header>
+            <tag-list id="tags" show-remove></tag-list>
+            <add-tag-input id="add-tag"></add-tag-input>
+            <button id="delete-button" class="negative">Delete post</button>
+            <a id="edit-link" class="button full">Done</a>
+        </aside>
+
+        <script type="module" src="components/main-nav.js" async type="module"></script>
+        <script type="module" src="components/post-embed.js" async type="module"></script>
+        <script type="module" src="components/add-tag-input.js" async type="module"></script>
+        <script type="module" src="edit-post.js" async type="module"></script>
+    </body>
+</html>

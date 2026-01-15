@@ -1,0 +1,7 @@
+# Node
+node_modules/
+build/
+
+# Test Data
+/backend/data/
+/frontend/data

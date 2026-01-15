@@ -1,0 +1,13 @@
+::part(button select) {
+    visibility: collapse;
+}
+
+:host([show-selection]) ::part(button select) {
+    visibility: visible;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5em;
+}

@@ -1,0 +1,29 @@
+{
+  "name": "backend",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "The backend for the homebooru image board",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx --watch src/index.ts",
+    "build": "rm -rf build/* && tsc -p tsconfig.json && cp package.json build/ && cp -r node_modules build/"
+  },
+  "author": "Daniel Spindler",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^25.0.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.0.2",
+    "typebox": "^1.0.71"
+  },
+  "files": [
+    "package.json",
+    "src"
+  ]
+}

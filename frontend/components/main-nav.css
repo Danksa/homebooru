@@ -1,0 +1,42 @@
+:host {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.logo {
+    width: 31px;
+    height: 29px;
+
+    background-color: var(--foreground);
+    mask-image: url("/assets/logo-small.svg");
+}
+
+ul {
+    display: flex;
+    flex-flow: row nowrap;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+
+    visibility: visible !important;
+}
+
+li {
+    padding: 1em;
+
+    &.current {
+        text-decoration: underline;
+    }
+}
+
+a {
+    color: inherit;
+
+    cursor: pointer;
+
+    text-decoration: none;
+}

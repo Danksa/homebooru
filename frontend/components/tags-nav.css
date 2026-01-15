@@ -1,0 +1,21 @@
+nav {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+button, a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-grow: 1;
+
+    padding: 0.5em;
+
+    color: inherit;
+
+    &:visited,
+    &:active {
+        color: inherit;
+    }
+}

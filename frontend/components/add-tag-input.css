@@ -1,0 +1,19 @@
+.row {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 0.5em;
+
+    position: relative;
+
+    input {
+        flex-grow: 1;
+    }
+
+    button {
+        width: 40px;
+        aspect-ratio: 1;
+
+        padding: 0em !important;
+        font-size: 2em;
+    }
+}

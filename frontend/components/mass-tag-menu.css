@@ -1,0 +1,10 @@
+.button-row {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    gap: 1.0em;
+
+    > button {
+        flex-grow: 1;
+    }
+}
