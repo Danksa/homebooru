@@ -2,15 +2,16 @@ import { componentStyle } from "../util/attach-style.js";
 import { debounced } from "../util/debounce.js";
 import { fetchSuggestions } from "../util/suggestions.js";
 import { create } from "../util/template.js";
+import { CustomElement } from "./custom-element.js";
 import "./tag-suggestion-box.js";
 
-class SearchInput extends HTMLElement {
-    #inputKeyListener;
-    #suggestionsFocusListener;
-    #suggestionListener;
-
+class SearchInput extends CustomElement {
     constructor() {
         super();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const query = urlParams.get("query") ?? "";
+        this.query = query;
 
         const shadow = this.attachShadow({ mode: "closed" });
         shadow.appendChild(componentStyle("/components/search-input.css"));
@@ -26,63 +27,59 @@ class SearchInput extends HTMLElement {
 
         const { input, searchButton, suggestions } = template.namedElements;
 
+        this.registerListener(suggestions, "suggestion", this.onSuggestionSelected);
+        this.registerListener(suggestions, "return-focus", this.onReturnFocus);
         this.suggestions = suggestions;
+
+        this.registerListener(input, "keydown", this.onKeyDown);
+        this.registerListener(input, "keyup", this.onKeyUp);
+        input.value = query;
         this.input = input;
 
-        searchButton.addEventListener("click", () => {
-            this.search(input.value);
-        }, { once: true });
+        this.registerListener(searchButton, "click", this.onSearchClicked, { once: true });
 
-        this.#suggestionsFocusListener = () => {
-            input.focus();
-        };
-        this.#suggestionListener = (event) => {
-            this.insertSuggestion(event.detail);
-        };
+        this.registerListener(window, "pageshow", this.onPageShow);
 
-        this.#inputKeyListener = (event) => {
-            if(event.key === "Enter") {
-                this.search(input.value);
-                input.removeEventListener("keydown", this.#inputKeyListener);
-            } else if(event.key === "ArrowDown") {
-                event.preventDefault();
-                suggestions.focus();
-            } else if(event.key === "Escape") {
-                suggestions.clear();
-            }
-        };
+        this.debouncedRequest = debounced(this.requestSuggestions.bind(this), 500);
+    }
 
-        const debouncedRequest = debounced(this.requestSuggestions.bind(this), 500);
+    onPageShow(event) {
+        if(event.persisted) {
+            this.input.value = this.query;
+            this.connectedCallback();
+        }
+    }
 
+    onSearchClicked() {
+        this.search(this.input.value);
+    }
+
+    onSuggestionSelected(event) {
+        this.insertSuggestion(event.detail);
+    }
+
+    onReturnFocus() {
+        this.input.focus();
+    }
+
+    onKeyDown(event) {
+        if(event.key === "Enter") {
+            this.search(this.input.value);
+            this.input.disabled = true;
+        } else if(event.key === "ArrowDown") {
+            event.preventDefault();
+            this.suggestions.focus();
+        } else if(event.key === "Escape") {
+            this.suggestions.clear();
+        }
+    }
+
+    onKeyUp(event) {
         const ignoredKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "Shift", "Control", "Alt", "Escape"];
-        input.addEventListener("keyup", (event) => {
-            if(!ignoredKeys.includes(event.key)) {
-                const words = input.value.split(" ");
-                debouncedRequest(words[words.length - 1]);
-            }
-        });
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const query = urlParams.get("query") ?? "";
-        input.value = query;
-        window.addEventListener("pageshow", (event) => {
-            if(event.persisted) {
-                input.value = query;
-                this.connectedCallback();
-            }
-        });
-    }
-
-    connectedCallback() {
-        this.suggestions.addEventListener("suggestion", this.#suggestionListener);
-        this.suggestions.addEventListener("return-focus", this.#suggestionsFocusListener);
-        this.input.addEventListener("keydown", this.#inputKeyListener);
-    }
-
-    disconnectedCallback() {
-        this.suggestions.removeEventListener("suggestion", this.#suggestionListener);
-        this.suggestions.removeEventListener("return-focus", this.#suggestionsFocusListener);
-        this.input.removeEventListener("keydown", this.#inputKeyListener);
+        if(!ignoredKeys.includes(event.key)) {
+            const words = this.input.value.split(" ");
+            this.debouncedRequest(words[words.length - 1]);
+        }
     }
 
     search(text) {

@@ -1,8 +1,7 @@
 import { componentStyle } from "../util/attach-style.js";
+import { CustomElement } from "./custom-element.js";
 
-export class TagSuggestionBox extends HTMLElement {
-    #keyDownListener;
-
+export class TagSuggestionBox extends CustomElement {
     constructor() {
         super();
 
@@ -15,20 +14,14 @@ export class TagSuggestionBox extends HTMLElement {
         this.suggestions = suggestions;
         shadow.appendChild(suggestions);
 
-        this.#keyDownListener = this.#onKeyDown.bind(this);
+        this.registerListener(this, "keydown", this.#onKeyDown);
 
-        window.addEventListener("pageshow", event => {
-            if(event.persisted)
-                this.connectedCallback();
-        });
+        this.registerListener(window, "pageshow", this.onPageShow);
     }
 
-    connectedCallback() {
-        this.addEventListener("keydown", this.#keyDownListener);
-    }
-
-    disconnectedCallback() {
-        this.removeEventListener("keydown", this.#keyDownListener);
+    onPageShow(event) {
+        if(event.persisted)
+            this.connectedCallback();
     }
 
     focus() {

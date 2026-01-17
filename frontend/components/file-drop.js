@@ -1,17 +1,12 @@
 import { componentStyle } from "../util/attach-style.js";
 import { create } from "../util/template.js";
+import { CustomElement } from "./custom-element.js";
 
-class FileDrop extends HTMLElement {
+class FileDrop extends CustomElement {
     static observedAttributes = ["disabled"];
 
     constructor() {
         super();
-
-        this.globalDropSuppresion = (event) => {
-            const items =  Array.from(event.dataTransfer.items);
-            if(items.some(item => item.kind === "file"))
-                event.preventDefault();
-        };
 
         const shadow = this.attachShadow({ mode: "closed" });
         shadow.appendChild(componentStyle("/components/file-drop.css"));
@@ -29,17 +24,16 @@ class FileDrop extends HTMLElement {
 
         const { label, input } = template.namedElements;
 
-        label.addEventListener("drop", this.onFileDropped.bind(this));
-        label.addEventListener("dragover", this.onFileDragOver.bind(this));
-        label.addEventListener("dragleave", this.onFileDragEnd.bind(this));
-        label.addEventListener("dragend", this.onFileDragEnd.bind(this));
+        this.registerListener(label, "drop", this.onFileDropped);
+        this.registerListener(label, "dragover", this.onFileDragOver);
+        this.registerListener(label, "dragleave", this.onFileDragEnd);
+        this.registerListener(label, "dragend", this.onFileDragEnd);
         this.label = label;
 
-        input.addEventListener("change", (event) => {
-            this.dispatchEvent(new CustomEvent("files-added", { detail: event.target.files }));
-            input.value = null;
-        });
+        this.registerListener(input, "change", this.onInputChange);
         this.input = input;
+
+        this.registerListener(window, "drop", this.suppressDefaultDrop);
     }
 
     attributeChangedCallback(name, _, newValue) {
@@ -48,12 +42,10 @@ class FileDrop extends HTMLElement {
         }
     }
 
-    connectedCallback() {
-        window.addEventListener("drop", this.globalDropSuppresion);
-    }
-
-    disconnectedCallback() {
-        window.removeEventListener("drop", this.globalDropSuppresion);
+    suppressDefaultDrop(event) {
+        const items =  Array.from(event.dataTransfer.items);
+        if(items.some(item => item.kind === "file"))
+            event.preventDefault();
     }
 
     onFileDropped(event) {
@@ -88,6 +80,11 @@ class FileDrop extends HTMLElement {
 
     onFileDragEnd() {
         this.label.classList.remove("dragging");
+    }
+
+    onInputChange(event) {
+        this.dispatchEvent(new CustomEvent("files-added", { detail: event.target.files }));
+        this.input.value = null;
     }
 }
 

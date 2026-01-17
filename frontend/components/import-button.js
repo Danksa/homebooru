@@ -1,8 +1,9 @@
 import { backendUrl } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { create } from "../util/template.js";
+import { CustomElement } from "./custom-element.js";
 
-class ImportButton extends HTMLElement {
+class ImportButton extends CustomElement {
     constructor() {
         super();
 
@@ -15,18 +16,20 @@ class ImportButton extends HTMLElement {
         shadow.append(...template.elements);
 
         const { button } = template.namedElements;
-        button.addEventListener("click", async () => {
-            try {
-                const response = await fetch(`${backendUrl}/posts/import`, { method: "post" });
-                if(response.status >= 200 && response.status < 300)
-                    alert("Import started");
-                else
-                    alert(await response.text());
-            } catch(error) {
-                console.log(error);
-                alert(`Could not start import: ${error}`)
-            }
-        });
+        this.registerListener(button, "click", this.onImportClicked);
+    }
+
+    async onImportClicked() {
+        try {
+            const response = await fetch(`${backendUrl}/posts/import`, { method: "post" });
+            if(response.status >= 200 && response.status < 300)
+                alert("Import started");
+            else
+                alert(await response.text());
+        } catch(error) {
+            console.log(error);
+            alert(`Could not start import: ${error}`)
+        }
     }
 }
 

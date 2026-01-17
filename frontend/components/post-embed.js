@@ -1,9 +1,10 @@
 import { backendUrl, postBasePath } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { create } from "../util/template.js";
+import { CustomElement } from "./custom-element.js";
 import { TagList } from "./tag-list.js";
 
-class PostEmbed extends HTMLElement {
+class PostEmbed extends CustomElement {
     constructor() {
         super();
 
@@ -16,14 +17,13 @@ class PostEmbed extends HTMLElement {
         shadow.append(...template.elements);
 
         const { container } = template.namedElements;
-
-        container.addEventListener("click", () => {
-            container.classList.toggle("full");
-        });
+        this.registerListener(container, "click", () => container.classList.toggle("full"));
         this.container = container;
     }
 
     connectedCallback() {
+        super.connectedCallback();
+
         const urlParams = new URLSearchParams(window.location.search);
         const postId = Number(urlParams.get("id") ?? undefined);
         if(!Number.isInteger(postId))

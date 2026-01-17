@@ -1,8 +1,9 @@
 import { maxPageQuicklinks, showFirstPage, showLastPage } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { create } from "../util/template.js";
+import { CustomElement } from "./custom-element.js";
 
-class PostsNav extends HTMLElement {
+class PostsNav extends CustomElement {
     constructor() {
         super();
 
@@ -11,9 +12,7 @@ class PostsNav extends HTMLElement {
 
         const gridId = this.getAttribute("grid");
         const grid = document.getElementById(gridId);
-        grid.addEventListener("pagination", (event) => {
-            this.populate(shadow, event.detail);
-        });
+        this.registerListener(grid, "pagination", event => this.populate(shadow, event.detail));
         
         if(grid.pagination != null)
             this.populate(shadow, grid.pagination);
