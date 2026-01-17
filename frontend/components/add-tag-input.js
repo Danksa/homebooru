@@ -1,5 +1,4 @@
 import { componentStyle } from "../util/attach-style.js";
-import { TagSuggestionBox } from "./tag-suggestion-box.js";
 import { debounced } from "../util/debounce.js";
 import { fetchSuggestions } from "../util/suggestions.js";
 import { create } from "../util/template.js";
