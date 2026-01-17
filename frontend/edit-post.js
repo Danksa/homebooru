@@ -1,4 +1,4 @@
-import { backendUrl } from "./config.js";
+import { backend } from "./util/backend.js";
 
 const urlParams = new URLSearchParams(window.location.search);
 const postId = Number(urlParams.get("id") ?? undefined);
@@ -13,7 +13,7 @@ addTagInput.addEventListener("submit", async (event) => {
     const { tag } = event.detail;
 
     try {
-        await fetch(`${backendUrl}/posts/${postId}/tags`, { method: "post", body: JSON.stringify({ name: tag }), headers: { "Content-Type": "application/json" } });
+        await backend.post(`/posts/${postId}/tags`, { name: tag });
         window.location.reload();
     } catch (error) {
         console.log(error);
@@ -24,7 +24,7 @@ const tags = document.getElementById("tags");
 tags.addEventListener("remove", async (event) => {
     const { id } = event.detail;
     try {
-        await fetch(`${backendUrl}/posts/${postId}/tags/${id}`, { method: "delete" });
+        await backend.delete(`/posts/${postId}/tags/${id}`);
         window.location.reload();
     } catch (error) {
         console.log(error);
@@ -34,7 +34,7 @@ tags.addEventListener("remove", async (event) => {
 const deleteButton = document.getElementById("delete-button");
 deleteButton.addEventListener("click", async () => {
     try {
-        await fetch(`${backendUrl}/posts/${postId}`, { method: "delete" });
+        await backend.delete(`/posts/${postId}`);
         window.location = "/posts.html";
     } catch (error) {
         console.log(error);

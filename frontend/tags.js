@@ -1,4 +1,5 @@
-import { backendUrl, tagsPerPage } from "./config.js";
+import { tagsPerPage } from "./config.js";
+import { backend } from "./util/backend.js";
 import "./components/tags-nav.js";
 
 const tagList = document.getElementById("tags");
@@ -8,9 +9,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const start = Number(urlParams.get('start') ?? "0");
 
 const fetchTags = async () => {
-    const result = await fetch(`${backendUrl}/tags?from=${start}&count=${tagsPerPage}`);
-    const body = await result.json();
-    console.log("Result", body);
+    const body = await backend.get(`/tags?from=${start}&count=${tagsPerPage}`);
 
     tagList.tags = body.tags;
     tagNav.create({

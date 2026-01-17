@@ -1,3 +1,5 @@
+import { backend } from "./util/backend.js";
+
 const urlParams = new URLSearchParams(window.location.search);
 const rawTagId = urlParams.get("id");
 const tagId = rawTagId != null ? Number(rawTagId) : null;
@@ -10,8 +12,7 @@ idTitle.textContent = `ID ${tagId}`;
 const tagName = document.getElementById("name");
 
 const fetchTag = async () => {
-    const response = await fetch(`http://localhost:3000/tags/${tagId}`);
-    const body = await response.json();
+    const body = await backend.get(`/tags/${tagId}`);
     tagName.textContent = body.name;
 };
 
@@ -21,7 +22,7 @@ const deleteButton = document.getElementById("delete-button");
 deleteButton.addEventListener("click", async () => {
     deleteButton.toggleAttribute("disabled", true);
 
-    await fetch(`http://localhost:3000/tags/${tagId}`, { method: "delete" });
+    await backend.delete(`/tags/${tagId}`);
 
     window.location = "/index.html";
 });

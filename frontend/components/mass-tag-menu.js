@@ -1,8 +1,8 @@
 import { massTag } from "../state/mass-tag.js";
 import { componentStyle } from "../util/attach-style.js";
 import { create } from "../util/template.js";
-import "./add-tag-input.js";
 import { CustomElement } from "./custom-element.js";
+import "./add-tag-input.js";
 import "./tag-list.js";
 
 class MassTagMenu extends CustomElement {

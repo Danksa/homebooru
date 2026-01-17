@@ -1,5 +1,5 @@
-import { backendUrl } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { backend } from "../util/backend.js";
 import { create } from "../util/template.js";
 import { CustomElement } from "./custom-element.js";
 
@@ -21,7 +21,7 @@ class ImportButton extends CustomElement {
 
     async onImportClicked() {
         try {
-            const response = await fetch(`${backendUrl}/posts/import`, { method: "post" });
+            const response = await backend.post("/posts/import");
             if(response.status >= 200 && response.status < 300)
                 alert("Import started");
             else

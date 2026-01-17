@@ -1,7 +1,6 @@
-import { backendUrl } from "../config.js";
+import { backend } from "./backend.js";
 
 export const fetchSuggestions = async (text) => {
     const sanitized = window.encodeURIComponent(text.trim());
-    const response = await fetch(`${backendUrl}/tags/suggestions?query=${sanitized}`);
-    return await response.json();
+    return await backend.get(`/tags/suggestions?query=${sanitized}`);
 };

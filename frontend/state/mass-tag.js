@@ -1,4 +1,4 @@
-import { backendUrl } from "../config.js";
+import { backend } from "../util/backend.js";
 import { postSelection } from "./post-selection.js";
 
 class MassTag extends EventTarget {
@@ -32,13 +32,7 @@ class MassTag extends EventTarget {
             const tags = this.tags();
             const postIds = postSelection.selection();
             for(const postId of postIds) {
-                await fetch(`${backendUrl}/posts/${postId}/tags`, {
-                    method: "post",
-                    body: JSON.stringify({ names: tags }),
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                });
+                await backend.post(`/posts/${postId}/tags`, { names: tags });
                 
                 postSelection.toggleSelection(postId, false);
             }

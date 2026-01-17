@@ -1,4 +1,4 @@
-import { backendUrl } from "./config.js";
+import { backend } from "./util/backend.js";
 
 const drop = document.getElementById("drop");
 const list = document.getElementById("list");
@@ -13,7 +13,7 @@ const uploadFile = async (file) => {
     const data = new FormData();
     data.append("files", file);
     
-    await fetch(`${backendUrl}/posts`, { method: "post", body: data });
+    await backend.post("/posts", data);
 };
 
 const uploadFiles = async (files) => {

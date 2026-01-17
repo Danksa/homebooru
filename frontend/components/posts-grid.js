@@ -1,5 +1,6 @@
-import { backendUrl, postsPerPage } from "../config.js";
+import { postsPerPage } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { backend } from "../util/backend.js";
 import { create } from "../util/template.js";
 import "./posts-grid-post.js";
 
@@ -38,8 +39,7 @@ class PostsGrid extends HTMLElement {
         const query = urlParams.get("query");
 
         const queryString = query != null ? `&query=${query}` : "";
-        const result = await fetch(`${backendUrl}/posts?from=${start}&count=${postsPerPage.toFixed(0)}${queryString}`);
-        const body = await result.json();
+        const body = await backend.get(`/posts?from=${start}&count=${postsPerPage.toFixed(0)}${queryString}`);
         this.populate(body.posts);
 
         this.pagination = {

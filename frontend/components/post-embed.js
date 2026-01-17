@@ -1,5 +1,6 @@
-import { backendUrl, postBasePath } from "../config.js";
+import { postBasePath } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { backend } from "../util/backend.js";
 import { create } from "../util/template.js";
 import { CustomElement } from "./custom-element.js";
 import { TagList } from "./tag-list.js";
@@ -40,8 +41,7 @@ class PostEmbed extends CustomElement {
 
     async displayPost(id) {
         try {
-            const response = await fetch(`${backendUrl}/posts/${id}`);
-            const body = await response.json();
+            const body = await backend.get(`/posts/${id}`);
             const url = `${postBasePath}/${body.url}`;
 
             switch(body.type) {
@@ -78,9 +78,7 @@ class PostEmbed extends CustomElement {
             return;
         
         try {
-            const response = await fetch(`${backendUrl}/posts/${id}/tags`);
-            const body = await response.json();
-            tagList.tags = body;
+            tagList.tags = await backend.get(`/posts/${id}/tags`);
         } catch {
             tagList.tags = null;
         }
