@@ -28,5 +28,12 @@
         <script type="module" src="components/file-list.js" async type="module"></script>
 
         <script type="module" src="upload.js" async type="module"></script>
+
+        <script>
+            const ws = new WebSocket(`http://localhost:3000/posts/upload-status`);
+            ws.addEventListener("message", (event) => {
+                console.log("Got message!", event);
+            });
+        </script>
     </body>
 </html>
