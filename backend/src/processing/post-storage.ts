@@ -19,7 +19,7 @@ class PostStorage {
         return this.repo.delete(id);
     }
 
-    async query(start: number, count: number, tags?: ReadonlyArray<number>): Promise<ReadonlyArray<Post>> {
+    async query(start: number, count: number, tags?: ReadonlyArray<readonly [id: number, excluded: boolean]>): Promise<ReadonlyArray<Post>> {
         const posts = new Array<Post>();
 
         let skipped = 0;
@@ -33,18 +33,18 @@ class PostStorage {
             }
 
             const postTagIds = await postTagsStorage.tagIds(post.id);
-            if(tags == null || tags.every(id => postTagIds.has(id)))
+            if(tags == null || tags.every(([id, excluded]) => excluded ? !postTagIds.has(id) : postTagIds.has(id)))
                 posts.push(post);
         }
         return posts;
     }
 
-    async count(tags?: ReadonlyArray<number>): Promise<number> {
+    async count(tags?: ReadonlyArray<readonly [id: number, excluded: boolean]>): Promise<number> {
         let count = 0;
         for await (const post of this.repo.posts()) {
             if(tags != null) {
                 const postTagIds = await postTagsStorage.tagIds(post.id);
-                if(!tags.every(id => postTagIds.has(id)))
+                if(!tags.every(([id, excluded]) => excluded ? !postTagIds.has(id) : postTagIds.has(id)))
                     continue;
             }
 

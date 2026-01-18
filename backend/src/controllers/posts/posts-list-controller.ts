@@ -19,7 +19,15 @@ export const listPosts: RequestHandler = async (req, res) => {
 
         const sanitizedQuery = query?.trim();
         const tagNames = sanitizedQuery == null || sanitizedQuery.length === 0 ? null : sanitizedQuery.split(" ");
-        const tags = tagNames != null ? await Promise.all(tagNames.map(tag => tagStorage.tagId(tag).catch(() => -1))) : [];
+        const tags = tagNames != null
+            ? await Promise.all(
+                tagNames.map(async tag => {
+                    const excluded = tag.startsWith("-");
+                    const id = await tagStorage.tagId(excluded ? tag.slice(1) : tag).catch(() => -1);
+                    return [id, excluded] as readonly [id: number, excluded: boolean];
+                })
+            )
+            : [];
 
         const totalCount = await postStorage.count(tags);
         const posts = await postStorage.query(from, count, tags);
