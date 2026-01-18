@@ -1,9 +1,16 @@
 import { json } from "express";
-import { addPostTags, deletePost, fetchPost, listPosts, listPostTagIds, postCount, removePostTag, runPostImport, uploadPosts } from "../controllers/post-controller.js";
 import multer from "multer";
 import { config } from "../config.js";
 import { WebSocketRouter } from "../websocket/web-socket-router.js";
-import { WebSocket } from "ws";
+import { postCount } from "../controllers/posts/posts-count-controller.js";
+import { uploadPosts } from "../controllers/posts/posts-upload-controller.js";
+import { listPosts } from "../controllers/posts/posts-list-controller.js";
+import { fetchPost } from "../controllers/posts/posts-fetch-controller.js";
+import { listPostTagIds } from "../controllers/posts/posts-list-tag-ids-controller.js";
+import { addPostTags } from "../controllers/posts/posts-add-controller.js";
+import { removePostTag } from "../controllers/posts/posts-remove-tag-controller.js";
+import { deletePost } from "../controllers/posts/posts-delete-controller.js";
+import { runPostImport } from "../controllers/posts/posts-import-controller.js";
 
 const upload = multer({ dest: config.uploadsDirectory });
 

@@ -1,5 +1,9 @@
 import { Router, urlencoded } from "express";
-import { createTag, deleteTag, fetchTag, listTags, suggestTags } from "../controllers/tag-controller.js";
+import { listTags } from "../controllers/tags/tags-list-controller.js";
+import { createTag } from "../controllers/tags/tags-create-controller.js";
+import { suggestTags } from "../controllers/tags/tags-suggestion-controller.js";
+import { fetchTag } from "../controllers/tags/tags-fetch-controller.js";
+import { deleteTag } from "../controllers/tags/tags-delete-controller.js";
 
 export const tagsRouter = Router();
 
