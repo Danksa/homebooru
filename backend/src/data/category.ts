@@ -10,6 +10,8 @@ type CategoryCache = {
 };
 
 export class Category {
+    static DefaultColor: string = "#ffffff";
+
     private cached: CategoryCache | null;
 
     readonly id: number;
@@ -63,6 +65,20 @@ export class Category {
         } catch {
             // Category already deleted
         }
+    }
+
+    async name(): Promise<string> {
+        await this.fetchCache();
+        if(this.cached == null)
+            throw new Error(`Category with ID ${this.id} does not exist`);
+        return this.cached.name;
+    }
+
+    async color(): Promise<string> {
+        await this.fetchCache();
+        if(this.cached == null)
+            throw new Error(`Category with ID ${this.id} does not exist`);
+        return this.cached.color;
     }
 
     async path(): Promise<string> {

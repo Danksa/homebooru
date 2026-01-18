@@ -18,7 +18,8 @@ export const fetchTag: RequestHandler = async (req, res) => {
 
         res.contentType("application/json");
         res.end(JSON.stringify({
-            name: await tag.name()
+            name: await tag.name(),
+            category: await tag.category()
         }));
     } catch (error) {
         if(error instanceof ParseError) {

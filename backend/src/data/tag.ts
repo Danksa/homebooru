@@ -1,12 +1,13 @@
 import { readFile, stat, unlink, writeFile } from "fs/promises";
 import { postTagsStorage } from "../processing/post-tags-storage.js";
-import { TagSchema, TagSchemaCompile } from "../processing/tag.schema.js";
+import { TagSchema, TagSchemaCompile } from "./tag.schema.js";
 import { config } from "../config.js";
 
 type TagCache = {
     filePath: string;
     accessTime: number;
     name: string;
+    category: number | null;
 };
 
 export class Tag {
@@ -24,11 +25,12 @@ export class Tag {
         return this.cached != null;
     }
 
-    async save(name: string): Promise<void> {
+    async save(name: string, category: number | null): Promise<void> {
         const sanitized = Tag.sanitizedName(name);
 
         const tag = {
-            name: sanitized
+            name: sanitized,
+            category
         } satisfies TagSchema;
         const encoded = JSON.stringify(tag, undefined, "\t");
         console.log("Saving tag", encoded);
@@ -78,6 +80,13 @@ export class Tag {
         return this.cached.name;
     }
 
+    async category(): Promise<number | null> {
+        await this.fetchCache();
+        if(this.cached == null)
+            throw new Error(`Tag with ID ${this.id} does not exist`);
+        return this.cached.category;
+    }
+
     private async fetchCache(): Promise<void> {
         if(this.cached == null) {
             const filePath = this.filePath();
@@ -115,7 +124,8 @@ export class Tag {
             this.cached = {
                 accessTime: stats.mtimeMs,
                 filePath,
-                name: json.name
+                name: json.name,
+                category: json.category ?? null
             };
         } catch (error) {
             console.error(`Could not read tag ${this.id}:`, error);
