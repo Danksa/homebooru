@@ -93,7 +93,7 @@ export class TagSuggestionBox extends CustomElement {
                 this.#suggestionSelected(selected.textContent);
             }
         } else if (event.key === "Escape") {
-            this.clearSuggestions();
+            this.clear();
             this.#leaveFocus();
         }
     }
