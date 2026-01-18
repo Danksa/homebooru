@@ -46,6 +46,8 @@ li {
             height: 100%;
 
             background-color: var(--foreground);
+
+            transition: width 0.5s ease-out;
         }
 
         #percentage {

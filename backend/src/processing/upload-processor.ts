@@ -71,7 +71,6 @@ class UploadProcessor {
         const postPath = join(config.postsDirectory, postFileName);
         await rename(filePath, postPath);
 
-        console.log("Generating thumbnail");
         const thumbnailFileName = Thumbnail.name(postId);
         const thumbnailPath = join(config.thumbnailDirectory, thumbnailFileName);
 

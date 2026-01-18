@@ -72,13 +72,13 @@ class FileList extends HTMLElement {
 
         currentState.state = state;
 
-        /*if(state === "done") {
+        if(state === "done") {
             setTimeout(() => {
                 element.remove();
                 this.files.delete(file);
                 this.fileStates.delete(file);
             }, 1000);
-        }*/
+        }
     }
 
     formattedSize(size) {
