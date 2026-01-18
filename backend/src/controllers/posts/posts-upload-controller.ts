@@ -13,14 +13,8 @@ const Query = Type.Object({
 
 const QueryParser = Compile(Query);
 
-const trackProgress: RequestHandler = (req, res, next) => {
+const trackProgress: RequestHandler = (req, _, next) => {
     const { progressId } = QueryParser.Parse(req.query);
-
-    req.socket.setKeepAlive(true, 60 * 1000);
-
-    req.setTimeout(60 * 60 * 1000, () => {
-        console.log("Timeout :(");
-    });
 
     if(progressId == null) {
         next();
@@ -42,14 +36,16 @@ const trackProgress: RequestHandler = (req, res, next) => {
         transferred += chunk.length;
 
         const progress = 100.0 * transferred / size;
-        //console.log(`Progress: ${transferred} / ${size} -> ${(progress).toFixed(1)} %`);
         uploadProcessor.updateProgress(progressId, progress);
     });
     
+    console.log("next");
     next();
 };
 
 const processPosts: RequestHandler = async (req, res) => {
+    console.log("process start");
+
     if(req.files == null || !Array.isArray(req.files)) {
         res.status(400);
         res.end();
@@ -75,8 +71,6 @@ const upload = multer({ dest: config.uploadsDirectory });
 export const uploadPosts: Array<RequestHandler> = [trackProgress, upload.array("files"), processPosts];
 
 export const trackUploadStatus: WebSocketHandler = (ws, req, next) => {
-    console.log("Connection!", req.url);
-
     const listener: ProgressListener = (id, progress) => {
         ws.send(`${id}:${progress.toFixed(2)}`);
     };
@@ -84,7 +78,6 @@ export const trackUploadStatus: WebSocketHandler = (ws, req, next) => {
     uploadProcessor.addListener(listener);
 
     ws.on("close", () => {
-        console.log("Websocket closed");
         uploadProcessor.removeListener(listener);
     });
 
