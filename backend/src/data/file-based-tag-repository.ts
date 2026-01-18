@@ -1,4 +1,4 @@
-import { readdir, stat } from "fs/promises";
+import { readdir } from "fs/promises";
 import { join, parse } from "path";
 import { TagRepository } from "./tag-repository.js";
 import { Tag } from "./tag.js";
@@ -7,8 +7,8 @@ export class FileBasedTagRepository implements TagRepository {
     private readonly directory: string;
     private readonly cached: Map<number, Tag>;
 
-    constructor(postDirectory: string) {
-        this.directory = postDirectory;
+    constructor(directory: string) {
+        this.directory = directory;
         this.cached = new Map();
     }
 

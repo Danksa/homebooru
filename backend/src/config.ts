@@ -25,6 +25,10 @@ class Config {
         return `${this.dataDirectory}/tags`;
     }
 
+    get categoryDirectory(): string {
+        return `${this.dataDirectory}/categories`;
+    }
+
     get postTagsFilePath(): string {
         return `${this.dataDirectory}/post-tags.txt`;
     }

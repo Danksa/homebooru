@@ -1,16 +1,16 @@
 import { readFile, stat, unlink, writeFile } from "fs/promises";
-import { postTagsStorage } from "../processing/post-tags-storage.js";
-import { TagSchema, TagSchemaCompile } from "../processing/tag.schema.js";
+import { CategorySchema, CategorySchemaParser } from "./category.schema.js";
 import { config } from "../config.js";
 
-type TagCache = {
+type CategoryCache = {
     filePath: string;
     accessTime: number;
     name: string;
+    color: string;
 };
 
-export class Tag {
-    private cached: TagCache | null;
+export class Category {
+    private cached: CategoryCache | null;
 
     readonly id: number;
 
@@ -24,27 +24,30 @@ export class Tag {
         return this.cached != null;
     }
 
-    async save(name: string): Promise<void> {
-        const sanitized = Tag.sanitizedName(name);
+    async save(name: string, color: string): Promise<void> {
+        const sanitized = Category.sanitizedName(name);
 
-        const tag = {
-            name: sanitized
-        } satisfies TagSchema;
-        const encoded = JSON.stringify(tag, undefined, "\t");
-        console.log("Saving tag", encoded);
+        const category = {
+            name: sanitized,
+            color
+        } satisfies CategorySchema;
+
+        const encoded = JSON.stringify(category, undefined, "\t");
+        console.log("Saving category", encoded);
 
         if(sanitized.length === 0) {
-            throw new Error(`Empty tag name after sanitization ("${name}")`);
+            throw new Error(`Empty category name after sanitization ("${name}")`);
         }
 
         try {
             const path = await this.path();
-    
+
             await writeFile(path, encoded);
 
             if(this.cached != null) {
                 this.cached.accessTime = Date.now();
                 this.cached.name = sanitized;
+                this.cached.color = color;
             }
         } catch {
             await writeFile(this.filePath(), encoded);
@@ -56,26 +59,17 @@ export class Tag {
             const path = await this.path();
             await unlink(path);
 
-            await postTagsStorage.removeTag(this.id);
-
             this.clearCache();
         } catch {
-            // Tag already deleted
+            // Category already deleted
         }
     }
 
     async path(): Promise<string> {
         await this.fetchCache();
         if(this.cached == null)
-            throw new Error(`Tag with ID ${this.id} does not exist`);
+            throw new Error(`Category with ID ${this.id} does not exist`);
         return this.cached.filePath;
-    }
-
-    async name(): Promise<string> {
-        await this.fetchCache();
-        if(this.cached == null)
-            throw new Error(`Tag with ID ${this.id} does not exist`);
-        return this.cached.name;
     }
 
     private async fetchCache(): Promise<void> {
@@ -83,13 +77,13 @@ export class Tag {
             const filePath = this.filePath();
             if(filePath == null)
                 return;
-            
+        
             await this.updateCache(filePath);
         } else {
             const { filePath: cachedFilePath, accessTime } = this.cached;
             try {
                 const stats = await stat(cachedFilePath);
-                if (stats.mtimeMs <= accessTime)
+                if(stats.mtimeMs <= accessTime)
                     return;
 
                 await this.updateCache(cachedFilePath);
@@ -105,31 +99,32 @@ export class Tag {
     }
 
     private async updateCache(filePath: string): Promise<void> {
-        console.log(`Fetching Tag ${this.id}: ${filePath}`);
-        
+        console.log(`Fetching Category ${this.id}: ${filePath}`);
+
         try {
             const stats = await stat(filePath);
             const content = await readFile(filePath, { encoding: "utf-8" });
-            const json = TagSchemaCompile.Parse(JSON.parse(content));
+            const json = CategorySchemaParser.Parse(JSON.parse(content));
 
             this.cached = {
                 accessTime: stats.mtimeMs,
                 filePath,
-                name: json.name
+                name: json.name,
+                color: json.color
             };
         } catch (error) {
-            console.error(`Could not read tag ${this.id}:`, error);
+            console.error(`Could not read category ${this.id}`, error);
         }
     }
 
     private filePath(): string {
-        return `${config.tagDirectory}/${this.id.toFixed(0)}.json`;
+        return `${config.categoryDirectory}/${this.id.toFixed(0)}.json`;
     }
 
-    static async existing(id: number, filePath: string): Promise<Tag> {
-        const tag = new Tag(id);
-        await tag.updateCache(filePath);
-        return tag;
+    static async existing(id: number, filePath: string): Promise<Category> {
+        const category = new Category(id);
+        await category.updateCache(filePath);
+        return category;
     }
 
     static sanitizedName(name: string): string {

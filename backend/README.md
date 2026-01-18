@@ -12,5 +12,6 @@ The `$DATA` directory is divided into the following subdirectories:
 - `$DATA/uploads` this is where multer puts files you upload to the `POST /posts` endpoint. The files there will be processed and moved to `$DATA/posts` by the server.
 - `$DATA/imports` is similar to `$DATA/uploads`. You can copy image/video files you want to upload there and trigger the `POST /posts/import` endpoint to import all files as if you uploaded them. This came in handy for me to migrate from another image board.
 - `$DATA/post-tags.txt` this file is special and weird. It stores which posts are tagged with which tags, each line corresponds to a pair `<Post ID> <Tag ID>`. As an example the line `4 17` would signify that post 4 is tagged with tag 17.
+- `$DATA/categories` categories are stored here. Similar to tags in a JSON format with the file name `<CATEGORY ID>.json`.
 
 So to backup your whole homebooru you only need to backup the `$DATA` directory.
