@@ -1,8 +1,11 @@
+import { backendUrl } from "./config.js";
 import { backend } from "./util/backend.js";
 
 const drop = document.getElementById("drop");
 const list = document.getElementById("list");
 const upload = document.getElementById("upload");
+
+const fileIds = new Map();
 
 drop.addEventListener("files-added", (event) => {
     list.addFiles(event.detail);
@@ -12,8 +15,11 @@ drop.addEventListener("files-added", (event) => {
 const uploadFile = async (file) => {
     const data = new FormData();
     data.append("files", file);
+
+    const id = crypto.randomUUID();
+    fileIds.set(id, file);
     
-    await backend.post("/posts", data);
+    await backend.post(`/posts?progressId=${id}`, data);
 };
 
 const uploadFiles = async (files) => {
@@ -37,4 +43,13 @@ upload.addEventListener("click", () => {
 
     const files = Array.from(list.files);
     uploadFiles(files);
+});
+
+const ws = new WebSocket(`${backendUrl}/posts/upload-status`);
+ws.addEventListener("message", (event) => {
+    const [id, progress] = event.data.split(":");
+    const percent = parseFloat(progress);
+    const file = fileIds.get(id);
+    if(file != null)
+        list.updateFileState(file, percent);
 });

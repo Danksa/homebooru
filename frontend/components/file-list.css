@@ -10,22 +10,74 @@ ul {
 }
 
 li {
+    --progress: 0%;
+
     display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    gap: 0.5em;
+    flex-flow: column nowrap;
+    gap: 0.2em;
 
     width: 100%;
 
-    &.uploading::before {
+    .info {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 0.5em;
+    }
+
+    .progress {
+        display: none;
+
+        position: relative;
+
+        width: 100%;
+        height: 10px;
+
+        border: 2px solid var(--foreground);
+        border-radius: var(--roundness);
+
+        .bar {
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: var(--progress);
+            height: 100%;
+
+            background-color: var(--foreground);
+        }
+
+        #percentage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            position: absolute;
+            inset: 0;
+
+            color: var(--background);
+            font-size: 6pt;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+        }
+    }
+
+    &.uploading .progress {
+        display: block;
+    }
+
+    &.uploading .info::before {
         content: "⬆️ ";
     }
 
-    &.done::before {
+    &.done .info::before {
         content: "✅ ";
     }
 
-    &.error::before {
+    &.error .info::before {
         content: "❌ ";
     }
 }

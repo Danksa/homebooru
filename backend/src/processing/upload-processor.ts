@@ -13,14 +13,53 @@ const thumbnailProcessors = {
     [PostType.Video]: ffmpeg.generateThumbnail
 } satisfies Record<PostType, ThumbnailGenerator>;
 
+export type ProgressListener = (id: string, progress: number) => void;
+
 class UploadProcessor {
-    async process(filePath: string, extension: string): Promise<void> {
+    private readonly progress: Map<string, number>;
+    private readonly listeners: Set<ProgressListener>;
+
+    constructor() {
+        this.progress = new Map();
+        this.listeners = new Set();
+    }
+
+    addListener(listener: ProgressListener): void {
+        this.listeners.add(listener);
+        for(const [id, progress] of this.progress)
+            listener(id, progress);
+    }
+
+    removeListener(listener: ProgressListener): void {
+        this.listeners.delete(listener);
+    }
+
+    queue(id: string): void {
+        this.progress.set(id, 0);
+        this.notifyListeners(id, 0);
+    }
+
+    updateProgress(id: string, progress: number): void {
+        this.progress.set(id, progress);
+        this.notifyListeners(id, progress);
+    }
+
+    private notifyListeners(id: string, progress: number): void {
+        for(const listener of this.listeners)
+            listener(id, progress);
+    }
+
+    async process(filePath: string, extension: string, id?: string): Promise<void> {
         let type: PostType;
         try {
             type = postType(extension);
         } catch {
             await unlink(filePath);
             return;
+        }
+
+        if(id != null) {
+            this.progress.delete(id);
         }
 
         console.log(`Processing upload: [${PostType[type]}] "${filePath}"`);

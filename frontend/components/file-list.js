@@ -26,18 +26,28 @@ class FileList extends HTMLElement {
         for(const file of files) {
             const template = create(`
                 <li>
-                    <span class="name">${file.name}</span>
-                    <span class="spacer"></span>
-                    <span>${this.formattedSize(file.size)}</span>
+                    <div class="info">
+                        <span class="name">${file.name}</span>
+                        <span class="spacer"></span>
+                        <span>${this.formattedSize(file.size)}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="bar">
+                            <div id="percentage"></div>
+                        </div>
+                    </div>
                 </li>
             `);
             const entry = template.elements[0];
             this.list.appendChild(entry);
 
+            const { percentage } = template.namedElements;
+
             this.files.add(file);
             this.fileStates.set(file, {
                 state: "idle",
-                element: entry
+                element: entry,
+                percentage
             });
         }
     }
@@ -47,22 +57,28 @@ class FileList extends HTMLElement {
         if(currentState == null)
             return;
 
-        const { state: oldState, element } = currentState;
+        const { state: oldState, element, percentage } = currentState;
         if(oldState === "done")
             return;
+
+        if(typeof state === "number") {
+            element.style.setProperty("--progress", `${state.toFixed(2)}%`);
+            percentage.textContent = `${state.toFixed(2)} %`;
+            return;
+        }
 
         element.classList.remove(oldState);
         element.classList.add(state);
 
         currentState.state = state;
 
-        if(state === "done") {
+        /*if(state === "done") {
             setTimeout(() => {
                 element.remove();
                 this.files.delete(file);
                 this.fileStates.delete(file);
             }, 1000);
-        }
+        }*/
     }
 
     formattedSize(size) {

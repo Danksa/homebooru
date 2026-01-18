@@ -4,8 +4,10 @@ import { WebSocket } from "ws";
 import { IncomingMessage } from "http";
 import { isWebSocketRequest } from "./web-socket-request.js";
 
+export type WebSocketHandler = (ws: WebSocket, request: IncomingMessage, next: NextFunction) => void;
+
 type WebSocketRouterProperties = {
-    ws: (path: string, handler: (ws: WebSocket, request: IncomingMessage, next: NextFunction) => void) => void;
+    ws: (path: string, handler: WebSocketHandler) => void;
 };
 
 export type WebSocketRouter = Router & WebSocketRouterProperties;
