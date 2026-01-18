@@ -95,7 +95,8 @@ class SearchInput extends CustomElement {
     insertSuggestion(suggestion) {
         const words = this.input.value.split(" ");
         const previousWords = words.slice(0, -1);
-        this.input.value = `${previousWords.join(" ")}${previousWords.length > 0 ? " " : ""}${suggestion}`;
+        const excluded = words[words.length - 1].startsWith("-");
+        this.input.value = `${previousWords.join(" ")}${previousWords.length > 0 ? " " : ""}${excluded ? "-" : ""}${suggestion}`;
     }
 }
 
