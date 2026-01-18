@@ -4,6 +4,7 @@ import { backend } from "./util/backend.js";
 const drop = document.getElementById("drop");
 const list = document.getElementById("list");
 const upload = document.getElementById("upload");
+const importPath = document.getElementById("import-path");
 
 const fileIds = new Map();
 
@@ -53,3 +54,13 @@ ws.addEventListener("message", (event) => {
     if(file != null)
         list.updateFileState(file, percent);
 });
+
+const loadImportPath = async () => {
+    try {
+        const path = await backend.get("/posts/import/path");
+        importPath.textContent = path;
+    } catch {
+        importPath.textContent = "";
+    }
+};
+loadImportPath();

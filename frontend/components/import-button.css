@@ -1,8 +1,54 @@
 :host {
-    display: block;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    gap: 1em;
 }
 
-button {
-    width: 100%;
+#progress,
+#details {
+    display: none;
+
+    &.visible {
+        display: block;
+    }
+}
+
+#progress {
+    --progress: 0%;
+
+    position: relative;
+
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+
+    height: 20px;
+}
+
+#count {
+    color: var(--background);
+
+    font-size: 0.75em;
+
+    white-space: nowrap;
+}
+
+.bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    
+    top: 0;
+    left: 0;
+    
+    width: var(--progress);
     height: 100%;
+
+    background-color: var(--foreground);
+
+    transition: width 0.5s ease-out;
+
+    overflow: hidden;
 }

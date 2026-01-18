@@ -8,12 +8,14 @@ import { listPostTagIds } from "../controllers/posts/posts-list-tag-ids-controll
 import { addPostTags } from "../controllers/posts/posts-add-controller.js";
 import { removePostTag } from "../controllers/posts/posts-remove-tag-controller.js";
 import { deletePost } from "../controllers/posts/posts-delete-controller.js";
-import { runPostImport } from "../controllers/posts/posts-import-controller.js";
+import { fetchImportPath, runPostImport, trackImportStatus } from "../controllers/posts/posts-import-controller.js";
 
 export const postsRouter = WebSocketRouter();
 postsRouter.get("/count", postCount);
 
+postsRouter.get("/import/path", fetchImportPath);
 postsRouter.post("/import", runPostImport);
+postsRouter.ws("/import-status", trackImportStatus);
 
 postsRouter.post("/", ...uploadPosts);
 postsRouter.get("/", listPosts);

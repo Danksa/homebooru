@@ -1,35 +1,50 @@
 import { RequestHandler } from "express";
-import { readdir } from "fs/promises";
 import { config } from "../../config.js";
-import { uploadProcessor } from "../../processing/upload-processor.js";
-import { extname, join } from "path";
-
-let importRunning = false;
+import { resolve } from "path";
+import { WebSocketHandler } from "../../websocket/web-socket-router.js";
+import { importProcessor, ImportProgressListener } from "../../processing/import-processor.js";
 
 export const runPostImport: RequestHandler = (_, res) => {
-    if(importRunning) {
+    if(importProcessor.running) {
         res.status(400);
         res.end("Already running");
         return;
     }
 
-    importRunning = true;
+    void importProcessor.processImports();
 
-    const processFiles = async () => {
-        const files = await readdir(config.importDirectory, { encoding: "utf-8", recursive: false, withFileTypes: true });
-        for(const file of files) {
-            if(!file.isFile())
-                continue;
-
-            await uploadProcessor.process(join(file.parentPath, file.name), extname(file.name));
-        }
-
-        await new Promise<void>(r => setTimeout(r, 5000));
-
-        importRunning = false;
-    };
-
-    processFiles();
     res.status(202);
     res.end();
+};
+
+export const fetchImportPath: RequestHandler = (_, res) => {
+    const importPath = resolve(config.importDirectory);
+
+    res.contentType("application/json");
+    res.status(200);
+    res.end(JSON.stringify(importPath));
+};
+
+export const trackImportStatus: WebSocketHandler = (ws, _, next) => {
+    const listener: ImportProgressListener = (progress) => {
+        switch(progress.type) {
+            case "start":
+                ws.send(`start:${progress.files}`);
+                break;
+            case "file":
+                ws.send(`file:${progress.filesProcessed},${progress.currentFile}`);
+                break;
+            case "done":
+                ws.send(`done`);
+                break;
+        }
+    };
+
+    importProcessor.addListener(listener);
+
+    ws.on("close", () => {
+        importProcessor.removeListener(listener);
+    });
+
+    next();
 };

@@ -6,6 +6,13 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="stylesheet" href="base.css" />
+
+        <style>
+            section {
+                width: 100%;
+                max-width: 500px;
+            }
+        </style>
     </head>
     <body>
         <header>
@@ -14,13 +21,18 @@
             </nav>
         </header>
         <main>
-            <file-drop id="drop"></file-drop>
-            <file-list id="list" style="max-width: 100%"></file-list>
-            <button id="upload" type="button" style="width: 100%" disabled>Upload all</button>
+            <section>
+                <h1>Upload Files</h1>
+                <file-drop id="drop"></file-drop>
+                <file-list id="list" style="max-width: 100%"></file-list>
+                <button id="upload" type="button" style="width: 100%" disabled>Upload all</button>
+            </section>
+            <section>
+                <h1>Import on Server</h1>
+                <p>You can start the import process of files inside the import directory <code id="import-path"></code> on the server.</p>
+                <import-button style="width: 100%""></import-button>
+            </section>
         </main>
-        <footer>
-            <import-button style="width: 100%"></import-button>
-        </footer>
 
         <script type="module" src="components/main-nav.js" async type="module"></script>
         <script type="module" src="components/import-button.js" async type="module"></script>
