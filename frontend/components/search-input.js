@@ -1,3 +1,4 @@
+import { tagSuggestionDebounceMillis } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { debounced } from "../util/debounce.js";
 import { fetchSuggestions } from "../util/suggestions.js";
@@ -40,7 +41,7 @@ class SearchInput extends CustomElement {
 
         this.registerListener(window, "pageshow", this.onPageShow);
 
-        this.debouncedRequest = debounced(this.requestSuggestions.bind(this), 500);
+        this.debouncedRequest = debounced(this.requestSuggestions.bind(this), tagSuggestionDebounceMillis);
     }
 
     onPageShow(event) {

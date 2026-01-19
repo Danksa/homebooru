@@ -14,4 +14,5 @@ export const maxPageQuicklinks = 5;
 export const showFirstPage = true;
 export const showLastPage = true;
 
-
+// other
+export const tagSuggestionDebounceMillis = 200;

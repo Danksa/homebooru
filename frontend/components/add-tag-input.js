@@ -1,3 +1,4 @@
+import { tagSuggestionDebounceMillis } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { debounced } from "../util/debounce.js";
 import { fetchSuggestions } from "../util/suggestions.js";
@@ -33,7 +34,7 @@ export class AddTagInput extends CustomElement {
         this.registerListener(suggestions, "return-focus", this.onReturnFocus);
         this.suggestions = suggestions;
 
-        this.debouncedRequest = debounced(this.requestSuggestions.bind(this), 500);
+        this.debouncedRequest = debounced(this.requestSuggestions.bind(this), tagSuggestionDebounceMillis);
     }
 
     onInput(tag) {
