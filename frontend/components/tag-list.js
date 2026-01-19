@@ -56,7 +56,7 @@ export class TagList extends HTMLElement {
 
             const template = create(`
                 <li${color != null ? ` style="color: ${color}"` : ""}>
-                    <a href="/posts.html?query=${tag.name}">${tag.name}</a>
+                    <a class="name" href="/posts.html?query=${tag.name}">${tag.name}</a>
                     ${showEdit ? `<a class="edit" href="/tag.html?id=${tag.id.toFixed(0)}">✏️</a>` : ""}
                     ${showRemove ? `<button id="removeButton" part="button negative">Remove</button>` : ""}
                 </li>
