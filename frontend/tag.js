@@ -9,15 +9,6 @@ if(tagId == null)
 const idTitle = document.getElementById("id");
 idTitle.textContent = `ID ${tagId}`;
 
-const tagName = document.getElementById("name");
-
-const fetchTag = async () => {
-    const body = await backend.get(`/tags/${tagId}`);
-    tagName.textContent = body.name;
-};
-
-fetchTag();
-
 const deleteButton = document.getElementById("delete-button");
 deleteButton.addEventListener("click", async () => {
     deleteButton.toggleAttribute("disabled", true);
@@ -27,3 +18,31 @@ deleteButton.addEventListener("click", async () => {
     window.location = "/index.html";
 });
 
+const categoryInput = document.getElementById("category");
+
+const tagName = document.getElementById("name");
+
+const fetchTag = async () => {
+    const { name, category } = await backend.get(`/tags/${tagId}`);
+    tagName.value = name;
+    categoryInput.value = category ?? "";
+};
+
+const fetchCategories = async () => {
+    const categories = await backend.get("/categories");
+
+    const defaultCategory = document.createElement("option");
+    defaultCategory.value = "";
+    defaultCategory.textContent = "Default";
+    categoryInput.appendChild(defaultCategory);
+
+    for(const { id, name } of categories) {
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = name;
+        categoryInput.appendChild(option);
+    }
+
+    await fetchTag();
+};
+fetchCategories();

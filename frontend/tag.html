@@ -8,6 +8,16 @@
         <link rel="stylesheet" href="base.css" />
 
         <style>
+            main {
+                justify-content: flex-start;
+            }
+
+            form {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1em;
+            }
+
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
                 body {
                     display: grid;
@@ -51,12 +61,22 @@
         </header>
         <main>
             <h1>
-                <span id="name">Loading</span>
+                Tag
                  - 
                 <span id="id">Loading</span>
             </h1>
 
-            <button id="delete-button" type="button">Delete</button>
+            <form>
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" placeholder="tag name" />
+
+                <label for="category">Category</label>
+                <select id="category" name="category"></select>
+
+                <button style="grid-column: span 2;">Save</button>
+            </form>
+
+            <button id="delete-button" type="button" class="negative">Delete</button>
         </main>
 
         <script type="module" src="components/main-nav.js" async type="module"></script>

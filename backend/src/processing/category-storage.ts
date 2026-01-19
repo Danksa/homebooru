@@ -13,6 +13,10 @@ class CategoryStorage {
     category(id: number): Category {
         return this.repo.get(id);
     }
+
+    categories(): AsyncGenerator<Category> {
+        return this.repo.list();
+    }
 }
 
 export const categoryStorage = new CategoryStorage();
