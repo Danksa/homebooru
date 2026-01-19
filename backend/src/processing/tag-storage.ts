@@ -104,6 +104,16 @@ class TagStorage {
         }
         throw new Error(`Unknown tag "${name}"`);
     }
+
+    async removeCategory(categoryId: number): Promise<void> {
+        for await (const tag of this.repo.list()) {
+            const data = await tag.data();
+            if(data.category !== categoryId)
+                continue;
+
+            await tag.save({ category: null });
+        }
+    }
 }
 
 export const tagStorage = new TagStorage();

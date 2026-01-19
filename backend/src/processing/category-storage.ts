@@ -3,6 +3,7 @@ import { CategoryRepository } from "../data/category-repository.js";
 import { Category } from "../data/category.js";
 import { CategorySchema } from "../data/category.schema.js";
 import { JsonFileBasedRepository } from "../data/json-file-based-repository.js";
+import { tagStorage } from "./tag-storage.js";
 
 class CategoryStorage {
     private readonly repo: CategoryRepository;
@@ -26,6 +27,13 @@ class CategoryStorage {
     exists(id: number): Promise<boolean> {
         const category = this.repo.get(id);
         return category.exists();
+    }
+
+    async delete(id: number): Promise<void> {
+        await tagStorage.removeCategory(id);
+        
+        const category = this.repo.get(id);
+        await category.delete();
     }
 
     async update(id: number, newData: CategorySchema): Promise<void> {

@@ -34,3 +34,12 @@ form.addEventListener("submit", async event => {
         console.log(error);
     }
 });
+
+const deleteButton = document.getElementById("delete-button");
+deleteButton.addEventListener("click", async () => {
+    deleteButton.disabled = true;
+
+    await backend.delete(`/categories/${id.toFixed(0)}`);
+
+    window.location = "/tags.html";
+});
