@@ -13,6 +13,16 @@ li {
     flex-flow: row nowrap;
     align-items: center;
     gap: 1.0em;
+
+    &.category {
+        font-weight: bold;
+
+        margin-block-start: 1em;
+
+        &:first-child {
+            margin-block-start: 0;
+        }
+    }
 }
 
 a, a:visited, a:active, a:hover {

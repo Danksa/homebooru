@@ -4,6 +4,8 @@ import { tagStorage } from "../../processing/tag-storage.js";
 import { ParseError } from "typebox/value";
 import Type from "typebox";
 import Compile from "typebox/compile";
+import { categoryStorage } from "../../processing/category-storage.js";
+import { Category } from "../../data/category.js";
 
 const Query = Type.Object({
     id: Type.Integer({ minimum: 0 })
@@ -11,7 +13,7 @@ const Query = Type.Object({
 
 const QueryParser = Compile(Query);
 
-export const listPostTagIds: RequestHandler = async (req, res) => {
+export const listPostTags: RequestHandler = async (req, res) => {
     try {
         const { id } = QueryParser.Parse(req.params);
 
@@ -21,9 +23,15 @@ export const listPostTagIds: RequestHandler = async (req, res) => {
         res.contentType("application/json");
         res.end(JSON.stringify(await Promise.all(tags.map(async tag => {
             const data = await tag.data();
+
+            const category = data.category != null ? categoryStorage.category(data.category) : null;
+            const categoryData = category != null ? await category.data() : null;
+
             return {
                 id: tag.id,
-                name: data.name
+                name: data.name,
+                color: categoryData != null ? categoryData.color : Category.DefaultColor,
+                category: categoryData != null ? categoryData.name : "Default"
             };
         }))));
     } catch (error) {

@@ -4,7 +4,7 @@ import { postCount } from "../controllers/posts/posts-count-controller.js";
 import { trackUploadStatus, uploadPosts } from "../controllers/posts/posts-upload-controller.js";
 import { listPosts } from "../controllers/posts/posts-list-controller.js";
 import { fetchPost } from "../controllers/posts/posts-fetch-controller.js";
-import { listPostTagIds } from "../controllers/posts/posts-list-tag-ids-controller.js";
+import { listPostTags } from "../controllers/posts/posts-list-tags-controller.js";
 import { addPostTags } from "../controllers/posts/posts-add-controller.js";
 import { removePostTag } from "../controllers/posts/posts-remove-tag-controller.js";
 import { deletePost } from "../controllers/posts/posts-delete-controller.js";
@@ -23,7 +23,7 @@ postsRouter.get("/", listPosts);
 postsRouter.get("/:id", fetchPost);
 postsRouter.delete("/:id", deletePost);
 
-postsRouter.get("/:id/tags", listPostTagIds);
+postsRouter.get("/:id/tags", listPostTags);
 postsRouter.post("/:id/tags", json(), addPostTags);
 postsRouter.delete("/:id/tags/:tagId", removePostTag);
 
