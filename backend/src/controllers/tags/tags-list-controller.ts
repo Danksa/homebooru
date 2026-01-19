@@ -24,11 +24,12 @@ export const listTags: RequestHandler = async (req, res) => {
         res.contentType("application/json");
         res.end(JSON.stringify({
             tags: await Promise.all(tags.map(async tag => {
-                const categoryId = await tag.category();
+                const data = await tag.data();
+                const categoryId = data.category;
                 return {
                     id: tag.id,
-                    name: await tag.name(),
-                    color: categoryId == null ? Category.DefaultColor : await categoryStorage.category(categoryId).color()
+                    name: data.name,
+                    color: categoryId == null ? Category.DefaultColor : (await categoryStorage.category(categoryId).data()).color ?? Category.DefaultColor
                 };
             })),
             total: totalCount

@@ -3,9 +3,10 @@ import { ParseError } from "typebox/value";
 import { tagStorage } from "../../processing/tag-storage.js";
 import Type from "typebox";
 import Compile from "typebox/compile";
+import { TagId } from "./tags.schema.js";
 
 const Query = Type.Object({
-    id: Type.Integer({ minimum: 0 })
+    id: TagId
 });
 
 const QueryParser = Compile(Query);
@@ -15,11 +16,12 @@ export const fetchTag: RequestHandler = async (req, res) => {
         const { id } = QueryParser.Parse(req.params);
 
         const tag = tagStorage.tag(id);
+        const data = await tag.data();
 
         res.contentType("application/json");
         res.end(JSON.stringify({
-            name: await tag.name(),
-            category: await tag.category()
+            name: data.name,
+            category: data.category ?? null
         }));
     } catch (error) {
         if(error instanceof ParseError) {

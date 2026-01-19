@@ -19,10 +19,13 @@ export const listPostTagIds: RequestHandler = async (req, res) => {
         const tags = await Promise.all(Array.from(tagIds).map(id => tagStorage.tag(id)));
 
         res.contentType("application/json");
-        res.end(JSON.stringify(await Promise.all(tags.map(async tag => ({
-            id: tag.id,
-            name: await tag.name()
-        })))));
+        res.end(JSON.stringify(await Promise.all(tags.map(async tag => {
+            const data = await tag.data();
+            return {
+                id: tag.id,
+                name: data.name
+            };
+        }))));
     } catch (error) {
         if(error instanceof ParseError) {
             res.status(400);

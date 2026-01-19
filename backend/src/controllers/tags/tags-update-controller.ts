@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
 import { tagStorage } from "../../processing/tag-storage.js";
-import { ParseError } from "typebox/value";
-import Type from "typebox";
 import Compile from "typebox/compile";
+import Type from "typebox";
 import { TagId } from "./tags.schema.js";
 
 const Query = Type.Object({
@@ -11,22 +10,23 @@ const Query = Type.Object({
 
 const QueryParser = Compile(Query);
 
-export const deleteTag: RequestHandler = async (req, res) => {
+const Body = Type.Object({
+    name: Type.String(),
+    category: Type.Union([Type.Integer(), Type.Null()])
+});
+
+const BodyParser = Compile(Body);
+
+export const updateTag: RequestHandler = async (req, res) => {
     try {
         const { id } = QueryParser.Parse(req.params);
-
-        console.log(`Deleted tag: ${id}`);
-        await tagStorage.delete(id);
+        const { name, category } = BodyParser.Parse(req.body);
+        
+        await tagStorage.update(id, { name, category });
 
         res.end();
     } catch (error) {
-        if(error instanceof ParseError) {
-            res.status(400);
-            res.end();
-            return;
-        }
-
-        console.error("Error while deleting tag", error);
+        console.error("Error while creating tag", error);
         res.status(500);
         res.end();
     }

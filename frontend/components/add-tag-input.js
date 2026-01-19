@@ -3,6 +3,7 @@ import { debounced } from "../util/debounce.js";
 import { fetchSuggestions } from "../util/suggestions.js";
 import { create } from "../util/template.js";
 import { CustomElement } from "./custom-element.js";
+import "./tag-suggestion-box.js";
 
 export class AddTagInput extends CustomElement {
     constructor() {

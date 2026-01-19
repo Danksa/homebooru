@@ -1,9 +1,5 @@
 import { Category } from "./category.js";
+import { CategorySchema } from "./category.schema.js";
+import { Repository } from "./repository.js";
 
-export type CategoryRepository = {
-    category(id: number): Category;
-    create(name: string, color: string): Promise<Category>;
-    delete(id: number): Promise<void>;
-    categories(): AsyncGenerator<Category>;
-    count(): Promise<number>;
-};
+export type CategoryRepository = Repository<Category, CategorySchema>;

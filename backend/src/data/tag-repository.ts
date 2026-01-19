@@ -1,9 +1,5 @@
+import { Repository } from "./repository.js";
 import { Tag } from "./tag.js";
+import { TagSchema } from "./tag.schema.js";
 
-export type TagRepository = {
-    tag(id: number): Tag;
-    create(name: string): Promise<Tag>;
-    delete(id: number): Promise<void>;
-    tags(): AsyncGenerator<Tag>;
-    count(): Promise<number>;
-};
+export type TagRepository = Repository<Tag, TagSchema>;
