@@ -5,6 +5,7 @@ import Type from "typebox";
 import Compile from "typebox/compile";
 import { categoryStorage } from "../../processing/category-storage.js";
 import { Category } from "../../data/category.js";
+import { postTagsStorage } from "../../processing/post-tags-storage.js";
 
 const Query = Type.Object({
     from: Type.Integer({ minimum: 0 }),
@@ -21,17 +22,20 @@ export const listTags: RequestHandler = async (req, res) => {
         const totalCount = await tagStorage.count();
         const tags = await tagStorage.page(from, count);
 
+        const augmentedTags = await Promise.all(tags.map(async tag => {
+            const data = await tag.data();
+            const categoryId = data.category;
+            return {
+                id: tag.id,
+                name: data.name,
+                color: categoryId == null ? Category.DefaultColor : (await categoryStorage.category(categoryId).data()).color ?? Category.DefaultColor,
+                count: await postTagsStorage.postCount(tag.id)
+            };
+        }));
+
         res.contentType("application/json");
         res.end(JSON.stringify({
-            tags: await Promise.all(tags.map(async tag => {
-                const data = await tag.data();
-                const categoryId = data.category;
-                return {
-                    id: tag.id,
-                    name: data.name,
-                    color: categoryId == null ? Category.DefaultColor : (await categoryStorage.category(categoryId).data()).color ?? Category.DefaultColor
-                };
-            })),
+            tags: augmentedTags,
             total: totalCount
         }));
     } catch (error) {

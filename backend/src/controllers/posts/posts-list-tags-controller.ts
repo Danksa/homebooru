@@ -31,7 +31,8 @@ export const listPostTags: RequestHandler = async (req, res) => {
                 id: tag.id,
                 name: data.name,
                 color: categoryData != null ? categoryData.color : Category.DefaultColor,
-                category: categoryData != null ? categoryData.name : "Default"
+                category: categoryData != null ? categoryData.name : "Default",
+                count: await postTagsStorage.postCount(tag.id)
             };
         }))));
     } catch (error) {

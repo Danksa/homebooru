@@ -29,6 +29,7 @@ export class TagList extends HTMLElement {
 
         const showEdit = this.hasAttribute("show-edit");
         const showRemove = this.hasAttribute("show-remove");
+        const showCount = this.hasAttribute("show-count");
 
         tags.sort((a, b) => {
             if(a.category == null || b.category == null)
@@ -56,6 +57,7 @@ export class TagList extends HTMLElement {
 
             const template = create(`
                 <li${color != null ? ` style="color: ${color}"` : ""}>
+                    ${showCount ? `<span>${tag.count ?? 0}</span>` : ""}
                     <a class="name" href="/posts.html?query=${tag.name}">${tag.name}</a>
                     ${showEdit ? `<a class="edit" href="/tag.html?id=${tag.id.toFixed(0)}">✏️</a>` : ""}
                     ${showRemove ? `<button id="removeButton" part="button negative">Remove</button>` : ""}

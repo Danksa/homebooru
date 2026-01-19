@@ -2,6 +2,7 @@ import { readdir } from "fs/promises";
 import { Repository } from "./repository.js";
 import { join, parse } from "path";
 import { Cachable } from "./cachable.js";
+import { Dirent } from "fs";
 
 export class JsonFileBasedRepository<T extends Cachable<Data>, Data> implements Repository<T, Data> {
     private readonly directory: string;
@@ -56,6 +57,7 @@ export class JsonFileBasedRepository<T extends Cachable<Data>, Data> implements 
 
     async *list(): AsyncGenerator<T> {
         const files = await readdir(this.directory, { withFileTypes: true, encoding: "utf-8", recursive: false });
+        files.sort(JsonFileBasedRepository.byId);
         for(const file of files) {
             if(!file.isFile())
                 continue;
@@ -78,5 +80,9 @@ export class JsonFileBasedRepository<T extends Cachable<Data>, Data> implements 
 
             yield t;
         }
+    }
+
+    static byId(a: Dirent<string>, b: Dirent<string>): number {
+        return Number(parse(b.name).name) - Number(parse(a.name).name);
     }
 }
