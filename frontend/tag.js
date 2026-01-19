@@ -46,3 +46,16 @@ const fetchCategories = async () => {
     await fetchTag();
 };
 fetchCategories();
+
+const form = document.getElementById("form");
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const data = new FormData(form);
+    const category = data.get("category");
+
+    await backend.patch(`/tags/${tagId}`, {
+        name: data.get("name"),
+        category: category === "" ? null : parseInt(category)
+    });
+});

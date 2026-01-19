@@ -18,6 +18,7 @@ const Body = Type.Object({
 const BodyParser = Compile(Body);
 
 export const updateTag: RequestHandler = async (req, res) => {
+    console.log("UPDATE", req.params, req.body);
     try {
         const { id } = QueryParser.Parse(req.params);
         const { name, category } = BodyParser.Parse(req.body);

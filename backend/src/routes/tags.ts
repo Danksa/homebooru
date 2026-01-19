@@ -1,4 +1,4 @@
-import { Router, urlencoded } from "express";
+import { json, Router, urlencoded } from "express";
 import { listTags } from "../controllers/tags/tags-list-controller.js";
 import { createTag } from "../controllers/tags/tags-create-controller.js";
 import { suggestTags } from "../controllers/tags/tags-suggestion-controller.js";
@@ -14,5 +14,5 @@ tagsRouter.post("/", urlencoded({ extended: true }), createTag);
 tagsRouter.get("/suggestions", suggestTags);
 
 tagsRouter.get("/:id", fetchTag);
-tagsRouter.patch("/:id", urlencoded({ extended: true }), updateTag);
+tagsRouter.patch("/:id", json(), updateTag);
 tagsRouter.delete("/:id", deleteTag);

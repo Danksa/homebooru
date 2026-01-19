@@ -20,10 +20,15 @@ class TagStorage {
         if(!(await tag.exists()))
             return;
 
+        const data = await tag.data();
+        const oldName = data.name;
+
         const newName = newData.name;
-        const nameExists = await this.nameExists(newName);
-        if(nameExists)
-            throw new Error(`Cannot rename tag ${id} to "${newName}", another tag with name "${newName}" already exists`);
+        if(newName !== oldName) {
+            const nameExists = await this.nameExists(newName);
+            if(nameExists)
+                throw new Error(`Cannot rename tag ${id} to "${newName}", another tag with name "${newName}" already exists`);
+        }
 
         await tag.save(newData);
     }
