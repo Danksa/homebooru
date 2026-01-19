@@ -8,7 +8,31 @@
         <link rel="stylesheet" href="base.css" />
         <style>
             main {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(2, 1fr);
+                grid-template-areas:
+                    "tags"
+                    "categories";
                 align-items: flex-start;
+                
+                max-width: 1000px;
+
+                > section.tags {
+                    grid-area: tags;
+                }
+
+                > section.categories {
+                    grid-area: categories;
+                }
+            }
+
+            @media (min-width: 1000px) and (min-aspect-ratio: 1) {
+                main {
+                    grid-template-columns: repeat(2, 1fr);
+                    grid-template-rows: 1fr;
+                    grid-template-areas: "tags categories";
+                }
             }
         </style>
     </head>
@@ -19,13 +43,22 @@
             </nav>
         </header>
         <main>
-            <tag-list id="tags" show-edit show-count></tag-list>
-            <tags-nav id="tag-nav"></tags-nav>
+            <section class="tags">
+                <h1>Tags</h1>
+                <tag-list id="tags" show-edit show-count></tag-list>
+                <tags-nav id="tag-nav"></tags-nav>
+            </section>
+            <section class="categories">
+                <h1>Categories</h1>
+                <category-list id="categories" show-edit></category-list>
+                <a href="/create-category.html" class="button">Create Category</a>
+            </section>
         </main>
 
         <script type="module" src="components/main-nav.js" async></script>
         <script type="module" src="components/tags-nav.js" async></script>
         <script type="module" src="components/tag-list.js" async></script>
+        <script type="module" src="components/category-list.js" async></script>
         <script type="module" src="tags.js" async></script>
     </body>
 </html>

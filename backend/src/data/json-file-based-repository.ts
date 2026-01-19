@@ -35,18 +35,30 @@ export class JsonFileBasedRepository<T extends Cachable<Data>, Data> implements 
     }
 
     async create(data: Data): Promise<T> {
-        const id = await this.count();
+        const id = (await this.highestId()) + 1;
         const cached = this.cached.get(id);
         if(cached != null) {
-            const exists = await cached.exists();
-            if(exists)
-                throw new Error(`Entry with ID ${id} already exists`);
+            try {
+                const exists = await cached.exists();
+                if(exists)
+                    throw new Error(`Entry with ID ${id} already exists`);
+            } catch {
+                // Does not exist
+            }
         }
 
         const entry = this.createEntry(id);
         await entry.save(data);
         this.cached.set(id, entry);
         return entry;
+    }
+
+    async highestId(): Promise<number> {
+        let highest = 0;
+        for await (const t of this.list()) {
+            highest = Math.max(highest, t.id);
+        }
+        return highest;
     }
 
     async delete(id: number): Promise<void> {

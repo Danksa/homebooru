@@ -4,4 +4,5 @@ export type Repository<T, Data> = {
     delete(id: number): Promise<void>;
     list(): AsyncGenerator<T>;
     count(): Promise<number>;
+    highestId(): Promise<number>;
 };

@@ -144,3 +144,10 @@ input[type="text"], ::part(input text) {
 
     padding: 0.5em;
 }
+
+input[type="color"], ::part(input color) {
+    background-color: var(--background);
+    
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+}
