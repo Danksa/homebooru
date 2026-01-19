@@ -82,7 +82,7 @@ export class TagList extends HTMLElement {
     }
 
     #formattedCount(count) {
-        const unitIndex = Math.min(Math.floor(Math.log10(count) / 3), TagList.CountUnits.length - 1);
+        const unitIndex = Math.max(Math.min(Math.floor(Math.log10(count) / 3), TagList.CountUnits.length - 1), 0);
         const unitFactor = Math.pow(1000.0, unitIndex);
         return `${(count / unitFactor).toFixed(unitIndex > 0 ? 1 : 0)} ${TagList.CountUnits[unitIndex]}`;
     }

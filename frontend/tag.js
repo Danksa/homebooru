@@ -15,7 +15,7 @@ deleteButton.addEventListener("click", async () => {
 
     await backend.delete(`/tags/${tagId}`);
 
-    window.location = "/index.html";
+    window.location = "/tags.html";
 });
 
 const categoryInput = document.getElementById("category");
