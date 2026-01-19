@@ -3,6 +3,7 @@ import { JsonFileBasedRepository } from "../data/json-file-based-repository.js";
 import { TagRepository } from "../data/tag-repository.js";
 import { Tag } from "../data/tag.js";
 import { TagSchema } from "../data/tag.schema.js";
+import { postTagsStorage } from "./post-tags-storage.js";
 
 class TagStorage {
     private readonly repo: TagRepository;
@@ -47,17 +48,19 @@ class TagStorage {
     }
 
     async suggestions(search: string, maxResults: number = 10): Promise<ReadonlyArray<string>> {
-        const matches = new Array<string>();
+        const matches = new Array<readonly [name: string, count: number]>();
         for await (const tag of this.repo.list()) {
-            if(matches.length >= maxResults)
-                break;
-
             const data = await tag.data();
             const tagName = data.name;
-            if(tagName.includes(search))
-                matches.push(tagName);
+            if(tagName.includes(search)) {
+                const postCount = await postTagsStorage.postCount(tag.id);
+                matches.push([tagName, postCount]);
+            }
         }
-        return matches;
+
+        matches.sort(([_a, countA], [_b, countB]) => countB - countA);
+
+        return matches.slice(0, maxResults).map(([name]) => name);
     }
 
     async names(): Promise<ReadonlyArray<string>> {
