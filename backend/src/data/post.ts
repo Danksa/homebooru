@@ -1,32 +1,32 @@
 import { access, readdir, stat, unlink } from "fs/promises";
 import { config } from "../config.js";
 import { basename, extname, join, parse } from "path";
-import { Thumbnail } from "../processing/thumbnail.js";
+import { Thumbnail } from "./thumbnail.js";
 import { postTagsStorage } from "../processing/post-tags-storage.js";
 import { postType, PostType } from "./post-type.js";
 import { embedType, EmbedType } from "./embed-type.js";
 
-type PostCache = {
-    filePath: string;
-    accessTime: number;
+type Data = {
     type: PostType;
     embedType: EmbedType;
 };
 
-type ThumbnailCache = {
-    path: string;
+type Cache = {
+    filePath: string;
+    accessTime: number;
+    data: Data;
 };
 
 export class Post {
-    private cached: PostCache | null;
-    private cachedThumbnail: ThumbnailCache | null;
+    private cached: Cache | null;
 
     readonly id: number;
+    readonly thumbnail: Thumbnail;
 
     constructor(id: number) {
         this.id = id;
         this.cached = null;
-        this.cachedThumbnail = null;
+        this.thumbnail = new Thumbnail(id);
     }
 
     async exists(): Promise<boolean> {
@@ -34,14 +34,19 @@ export class Post {
         return this.cached != null;
     }
     
+    async data(): Promise<Data> {
+        await this.fetchCache();
+        if(this.cached == null)
+            throw new Error(`Post ${this.id} does not exist`);
+        return this.cached.data;
+    }
+
     async delete(): Promise<void> {
         try {
             const path = await this.path();
             await unlink(path);
 
-            const thumbnailPath = await this.thumbnailPath();
-            if(basename(thumbnailPath) !== Thumbnail.DefaultName)
-                await unlink(thumbnailPath);
+            await this.thumbnail.delete();
 
             await postTagsStorage.removePost(this.id);
 
@@ -49,6 +54,10 @@ export class Post {
         } catch {
             // Post already deleted
         }
+    }
+
+    private clearCache(): void {
+        this.cached = null;
     }
 
     async fileName(): Promise<string> {
@@ -63,67 +72,30 @@ export class Post {
         return this.cached.filePath;
     }
 
-    async type(): Promise<PostType> {
-        await this.fetchCache();
-        if(this.cached == null)
-            throw new Error(`Post with ID ${this.id} does not exist`);
-        return this.cached.type;
-    }
-
-    async embedType(): Promise<EmbedType> {
-        await this.fetchCache();
-        if(this.cached == null)
-            throw new Error(`Post with ID ${this.id} does not exist`);
-        return this.cached.embedType;
-    }
-
-    async thumbnailFileName(): Promise<string> {
-        const path = await this.thumbnailPath();
-        return basename(path);
-    }
-
-    async thumbnailPath(): Promise<string> {
-        if(this.cachedThumbnail != null)
-            return this.cachedThumbnail.path;
-
-        let thumbnailPath = join(config.thumbnailDirectory, Thumbnail.name(this.id));
-        try {
-            await access(thumbnailPath)
-        } catch {
-            thumbnailPath = join(config.thumbnailDirectory, Thumbnail.DefaultName);
-        }
-
-        this.cachedThumbnail = {
-            path: thumbnailPath
-        };
-        return thumbnailPath;
-    }
-
     private async fetchCache(): Promise<void> {
         if(this.cached == null) {
             const filePath = await this.filePath();
-            if(filePath == null)
-                return;
-
-            await this.updateCache(filePath);
+            if(filePath != null)
+                await this.updateCache(filePath);
         } else {
-            const { filePath: cachedFilePath, accessTime } = this.cached;
+            const { filePath, accessTime } = this.cached;
             try {
-                const stats = await stat(cachedFilePath);
-                if (stats.mtimeMs <= accessTime)
+                const stats = await stat(filePath);
+                if(stats.mtimeMs <= accessTime)
                     return;
-                
-                await this.updateCache(cachedFilePath);
+
+                try {
+                    await access(filePath);
+                    await this.updateCache(filePath);
+                } catch {
+                    this.cached = null;
+                    await this.fetchCache();
+                }
             } catch {
                 this.clearCache();
                 await this.fetchCache();
             }
         }
-    }
-
-    private clearCache(): void {
-        this.cached = null;
-        this.cachedThumbnail = null;
     }
 
     private async updateCache(filePath: string): Promise<void> {
@@ -135,8 +107,10 @@ export class Post {
             this.cached = {
                 accessTime: stats.mtimeMs,
                 filePath,
-                type: postType(extension),
-                embedType: embedType(extension)
+                data: {
+                    type: postType(extension),
+                    embedType: embedType(extension)
+                }
             };
         } catch {
             return;

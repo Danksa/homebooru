@@ -16,12 +16,12 @@ export const fetchPost: RequestHandler = async (req, res) => {
 
         const post = postStorage.post(id);
         const postUrl = await post.fileName();
-        const embedType = await post.embedType();
+        const data = await post.data();
 
         res.contentType("application/json");
         res.end(JSON.stringify({
             url: postUrl,
-            type: embedType
+            type: data.embedType
         }));
     } catch (error) {
         if(error instanceof ParseError) {

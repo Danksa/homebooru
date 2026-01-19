@@ -34,11 +34,14 @@ export const listPosts: RequestHandler = async (req, res) => {
 
         res.contentType("application/json");
         res.end(JSON.stringify({
-            posts: await Promise.all(posts.map(async post => ({
-                id: post.id,
-                thumbnail: await post.thumbnailFileName(),
-                type: await post.embedType()
-            }))),
+            posts: await Promise.all(posts.map(async post => {
+                const data = await post.data();
+                return {
+                    id: post.id,
+                    thumbnail: await post.thumbnail.fileName(),
+                    type: data.embedType
+                };
+            })),
             total: totalCount
         }));
     } catch (error) {

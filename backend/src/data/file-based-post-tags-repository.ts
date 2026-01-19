@@ -41,6 +41,7 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
     }
 
     async remove(postId: number, tagId: number): Promise<void> {
+        console.log("remove", { postId, tagId });
         const cacheValid = await this.cacheValid();
 
         await this.rewriteFiltered((entryPostId, entryTagId) => entryPostId !== postId || entryTagId !== tagId);
@@ -57,6 +58,7 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
     }
 
     async deletePost(postId: number): Promise<void> {
+        console.log("delete post", postId);
         const cacheValid = await this.cacheValid();
 
         await this.rewriteFiltered((entryPostId, _) => entryPostId !== postId);
@@ -144,14 +146,20 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
 
     private async rewriteFiltered(includeEntry: (postId: number, tagId: number) => boolean): Promise<void> {
         const tempFilePath = `${this.filePath}.new`;
-        const newPostTags = createWriteStream(tempFilePath, { encoding: "utf-8" });
 
+        try {
+            await unlink(tempFilePath);
+        } catch {
+            // No old temp file exists
+        }
+
+        const newPostTags = createWriteStream(tempFilePath, { encoding: "utf-8" });
         for await (const [postId, tagId] of this.fileEntries()) {
             if(includeEntry(postId, tagId))
                 newPostTags.write(`${postId} ${tagId}\n`);
         }
 
-        await new Promise<void>((res, rej) => newPostTags.close((err) => err != null ? res() : rej(err)));
+        await new Promise<void>(r => newPostTags.end(r));
 
         await unlink(this.filePath);
         await rename(tempFilePath, this.filePath);

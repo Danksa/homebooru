@@ -3,7 +3,7 @@ import { config } from "../config.js";
 import { postStorage } from "./post-storage.js";
 import { rename, unlink } from "fs/promises";
 import { imageMagick } from "./imagemagick.js";
-import { Thumbnail } from "./thumbnail.js";
+import { Thumbnail } from "../data/thumbnail.js";
 import { PostType, postType } from "../data/post-type.js";
 import { ThumbnailGenerator } from "./thumbnail-generator.js";
 import { ffmpeg } from "./ffmpeg.js";
