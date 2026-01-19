@@ -2,6 +2,8 @@ import { componentStyle } from "../util/attach-style.js";
 import { create } from "../util/template.js";
 
 export class TagList extends HTMLElement {
+    static CountUnits = ["", "k", "M"];
+
     constructor() {
         super();
 
@@ -57,7 +59,7 @@ export class TagList extends HTMLElement {
 
             const template = create(`
                 <li${color != null ? ` style="color: ${color}"` : ""}>
-                    ${showCount ? `<span>${tag.count ?? 0}</span>` : ""}
+                    ${showCount ? `<span>${this.#formattedCount(tag.count ?? 0)}</span>` : ""}
                     <a class="name" href="/posts.html?query=${tag.name}">${tag.name}</a>
                     ${showEdit ? `<a class="edit" href="/tag.html?id=${tag.id.toFixed(0)}">✏️</a>` : ""}
                     ${showRemove ? `<button id="removeButton" part="button negative">Remove</button>` : ""}
@@ -77,6 +79,12 @@ export class TagList extends HTMLElement {
     #clear() {
         while(this.list.firstChild)
             this.list.firstChild.remove();
+    }
+
+    #formattedCount(count) {
+        const unitIndex = Math.min(Math.floor(Math.log10(count) / 3), TagList.CountUnits.length - 1);
+        const unitFactor = Math.pow(1000.0, unitIndex);
+        return `${(count / unitFactor).toFixed(unitIndex > 0 ? 1 : 0)} ${TagList.CountUnits[unitIndex]}`;
     }
 }
 

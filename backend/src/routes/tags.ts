@@ -1,4 +1,4 @@
-import { json, Router, urlencoded } from "express";
+import { json, Router } from "express";
 import { listTags } from "../controllers/tags/tags-list-controller.js";
 import { createTag } from "../controllers/tags/tags-create-controller.js";
 import { suggestTags } from "../controllers/tags/tags-suggestion-controller.js";
@@ -9,7 +9,7 @@ import { updateTag } from "../controllers/tags/tags-update-controller.js";
 export const tagsRouter = Router();
 
 tagsRouter.get("/", listTags);
-tagsRouter.post("/", urlencoded({ extended: true }), createTag);
+tagsRouter.post("/", json(), createTag);
 
 tagsRouter.get("/suggestions", suggestTags);
 
