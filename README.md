@@ -7,16 +7,20 @@ So the goal with this project is to have as few dependencies to other things lik
 
 ## What does it do?
 Currently homebooru supports:
-- Uploading images and videos
+- Uploading images and videos (now with progress bars!)
+- Importing images and videos from local server directory
 - Tagging posts
 - Searching for posts by tags
 - Display posts (obviously!)
 - Mass-tagging posts
+- Tag categories
+
+## Next goals
+- Show most frequent tags on posts page
+- Tag aliases
 
 ## What does it not do? (for now)
 - Duplicate detection
-- Tag categories
-- Tag aliases
 - Tag implications
 
 ## Requirements

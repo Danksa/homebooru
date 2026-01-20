@@ -9,5 +9,4 @@ The frontend assumes that posts are available on `http(s)://<hostname>/data/post
 Some things like the amount of posts per page can be configured in the [config file](config.js).
 
 ## Styling
-You can adjust the colors and roundness of elements in the [theme.css](theme.css).
-
+You can adjust the colors and roundness of elements at the top of the [base.css](base.css).
