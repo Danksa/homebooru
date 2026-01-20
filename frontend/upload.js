@@ -13,11 +13,19 @@ drop.addEventListener("files-added", (event) => {
     upload.removeAttribute("disabled");
 });
 
+const randomId = () => {
+    try {
+        return crypto.randomUUID();
+    } catch {
+        return (Math.random() * 1000000.0).toFixed(0);
+    }
+};
+
 const uploadFile = async (file) => {
     const data = new FormData();
     data.append("files", file);
 
-    const id = crypto.randomUUID();
+    const id = randomId();
     fileIds.set(id, file);
     
     await backend.post(`/posts?progressId=${id}`, data);
