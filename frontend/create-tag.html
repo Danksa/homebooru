@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Create Category - Homebooru</title>
+        <title>Create Tag - Homebooru</title>
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -16,6 +16,10 @@
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1em;
+            }
+
+            button.create {
+                grid-column: span 2;
             }
 
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
@@ -55,21 +59,21 @@
             </nav>
         </header>
         <main>
-            <h1>Create Category</h1>
+            <h1>Create Tag</h1>
 
             <form id="form">
                 <label for="name">Name</label>
-                <input id="name" name="name" type="text" placeholder="category name" required />
+                <input id="name" name="name" type="text" placeholder="tag name" />
 
-                <label for="color">Color</label>
-                <input id="color" name="color" type="color" required />
+                <label for="category">Category</label>
+                <select id="category" name="category"></select>
 
-                <button style="grid-column: span 2;">Create</button>
+                <button class="create">Create</button>
             </form>
         </main>
 
         <script type="module" src="components/main-nav.js" async></script>
 
-        <script type="module" src="create-category.js" async></script>
+        <script type="module" src="create-tag.js" async></script>
     </body>
 </html>

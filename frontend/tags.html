@@ -27,6 +27,14 @@
                 }
             }
 
+            .tags > .title,
+            .categories > .title {
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                justify-content: space-between;
+            }
+
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
                 main {
                     grid-template-columns: repeat(2, 1fr);
@@ -44,14 +52,19 @@
         </header>
         <main>
             <section class="tags">
-                <h1>Tags</h1>
+                <div class="title">
+                    <h1>Tags</h1>
+                    <a href="/create-tag.html" class="button">Create Tag</a>
+                </div>
                 <tag-list id="tags" show-edit show-count></tag-list>
                 <tags-nav id="tag-nav"></tags-nav>
             </section>
             <section class="categories">
-                <h1>Categories</h1>
+                <div class="title">
+                    <h1>Categories</h1>
+                    <a href="/create-category.html" class="button">Create Category</a>
+                </div>
                 <category-list id="categories" show-edit></category-list>
-                <a href="/create-category.html" class="button">Create Category</a>
             </section>
         </main>
 

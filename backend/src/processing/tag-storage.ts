@@ -41,8 +41,8 @@ class TagStorage {
         return names.includes(name);
     }
 
-    create(name: string): Promise<Tag> {
-        return this.repo.create({ name, category: null });
+    create(name: string, category?: number): Promise<Tag> {
+        return this.repo.create({ name, category: category ?? null });
     }
 
     delete(id: number): Promise<void> {

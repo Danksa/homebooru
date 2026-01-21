@@ -155,3 +155,23 @@ input[type="color"], ::part(input color) {
     border: 2px solid var(--foreground);
     border-radius: var(--roundness);
 }
+
+select {
+    appearance: none;
+
+    padding: 0.5em;
+
+    color: var(--foreground);
+    background-color: var(--background);
+
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+
+    &::before {
+        display: block;
+        width: 40px;
+        height: 40px;
+
+        content: "v";
+    }
+}
