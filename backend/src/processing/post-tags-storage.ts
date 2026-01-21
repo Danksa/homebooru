@@ -1,7 +1,4 @@
-import { createReadStream, createWriteStream } from "fs";
 import { config } from "../config.js";
-import { createInterface } from "readline";
-import { appendFile, rename, stat, unlink } from "fs/promises";
 import { postStorage } from "./post-storage.js";
 import { PostTagsRepository } from "../data/post-tags-repository.js";
 import { FileBasedPostTagsRepository } from "../data/file-based-post-tags-repository.js";

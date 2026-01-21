@@ -34,10 +34,14 @@ export class TagList extends HTMLElement {
         const showCount = this.hasAttribute("show-count");
 
         tags.sort((a, b) => {
-            if(a.category == null || b.category == null)
-                return 0;
+            const nameOrder = a.name.localeCompare(b.name);
 
-            return a.category.localeCompare(b.category);
+            if(a.category == null || b.category == null)
+                return nameOrder;
+
+            const categoryOrder = a.category.localeCompare(b.category);
+
+            return categoryOrder === 0 ? nameOrder : categoryOrder;
         });
 
         let lastCategory = undefined;
