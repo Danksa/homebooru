@@ -81,7 +81,7 @@ export class Post {
             const { filePath, accessTime } = this.cached;
             try {
                 const stats = await stat(filePath);
-                if(stats.mtimeMs <= accessTime)
+                if(Math.floor(stats.mtimeMs) <= accessTime)
                     return;
 
                 try {
@@ -105,7 +105,7 @@ export class Post {
             const stats = await stat(filePath);
             const extension = extname(filePath);
             this.cached = {
-                accessTime: stats.mtimeMs,
+                accessTime: Math.floor(stats.mtimeMs),
                 filePath,
                 data: {
                     type: postType(extension),

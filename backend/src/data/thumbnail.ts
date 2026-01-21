@@ -52,7 +52,7 @@ export class Thumbnail {
             const { filePath, accessTime } = this.cached;
             try {
                 const stats = await stat(filePath);
-                if(stats.mtimeMs <= accessTime)
+                if(Math.floor(stats.mtimeMs) <= accessTime)
                     return;
 
                 try {
@@ -80,7 +80,7 @@ export class Thumbnail {
             const stats = await stat(filePath);
             this.cached = {
                 filePath,
-                accessTime: stats.mtimeMs
+                accessTime: Math.floor(stats.mtimeMs)
             };
         } catch {
             this.cached = {

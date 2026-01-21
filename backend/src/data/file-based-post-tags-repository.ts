@@ -41,7 +41,6 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
     }
 
     async remove(postId: number, tagId: number): Promise<void> {
-        console.log("remove", { postId, tagId });
         const cacheValid = await this.cacheValid();
 
         await this.rewriteFiltered((entryPostId, entryTagId) => entryPostId !== postId || entryTagId !== tagId);
@@ -58,7 +57,6 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
     }
 
     async deletePost(postId: number): Promise<void> {
-        console.log("delete post", postId);
         const cacheValid = await this.cacheValid();
 
         await this.rewriteFiltered((entryPostId, _) => entryPostId !== postId);
@@ -113,7 +111,7 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
             return false;
 
         const stats = await stat(this.filePath);
-        return this.cached.accessTime >= stats.mtimeMs;
+        return this.cached.accessTime >= Math.floor(stats.mtimeMs);
     }
 
     private async updateCache(): Promise<void> {
@@ -138,7 +136,7 @@ export class FileBasedPostTagsRepository implements PostTagsRepository {
         }
 
         this.cached = {
-            accessTime: stats.mtimeMs,
+            accessTime: Math.floor(stats.mtimeMs),
             postTags,
             tagPosts
         };
