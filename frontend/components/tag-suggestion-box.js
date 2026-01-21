@@ -1,5 +1,6 @@
 import { componentStyle } from "../util/attach-style.js";
 import { CustomElement } from "./custom-element.js";
+import { create } from "../util/template.js";
 
 export class TagSuggestionBox extends CustomElement {
     constructor() {
@@ -33,10 +34,18 @@ export class TagSuggestionBox extends CustomElement {
         this.clear();
 
         for(const tag of tags) {
-            const suggestion = document.createElement("li");
-            suggestion.textContent = tag;
+            const { name, count, color } = tag;
+
+            const template = create(`
+                <li style="--tag-color: ${color}">
+                    <span>${count.toFixed(0)}</span>
+                    <span class="name">${name}</span>
+                <li>
+            `);
+
+            const suggestion = template.elements[0];
             suggestion.addEventListener("click", () => {
-                this.#suggestionSelected(tag);
+                this.#suggestionSelected(name);
             });
             this.suggestions.appendChild(suggestion);
         }
@@ -88,7 +97,7 @@ export class TagSuggestionBox extends CustomElement {
         } else if (event.key === "Enter") {
             event.preventDefault();
 
-            const selected = this.suggestions.querySelector(".selected");
+            const selected = this.suggestions.querySelector(".selected .name");
             if(selected != null) {
                 this.#suggestionSelected(selected.textContent);
             }

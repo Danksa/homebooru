@@ -1,7 +1,8 @@
 :host([disabled]) {
     label {
+        --fg: var(--disabled);
+
         color: var(--disabled);
-        border-color: var(--disabled);
         cursor: default;
     }
 
@@ -11,13 +12,15 @@
 }
 
 label {
+    --fg: var(--foreground);
+
     display: flex;
     align-items: center;
     justify-content: center;
 
     padding: 1em;
 
-    border: 2px dashed var(--foreground);
+    border: 2px dashed var(--fg);
 
     cursor: pointer;
 
@@ -43,6 +46,9 @@ label {
 
         > .icon {
             font-size: 60px;
+
+            color: transparent;
+            text-shadow: 0 0 0 var(--fg);
         }
     }
 
