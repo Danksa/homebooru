@@ -48,6 +48,8 @@ class PostsGrid extends HTMLElement {
             step: postsPerPage
         };
         this.dispatchEvent(new CustomEvent("pagination", { detail: this.pagination }));
+
+        this.dispatchEvent(new CustomEvent("tags", { detail: body.tags }));
     }
 }
 

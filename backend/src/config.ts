@@ -4,6 +4,7 @@ class Config {
     private readonly dataDirectory: string;
 
     readonly ThumbnailSize: Size = { width: 300, height: 300 };
+    readonly FrequentTagsCount: number = 10;
 
     constructor() {
         this.dataDirectory = process.env.DATA_DIRECTORY ?? "./data";
