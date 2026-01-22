@@ -1,13 +1,13 @@
 @layer theme {
     html {
         --foreground: #d39f9f;
-        --background: #3e323b;
+        --background: #222122;
         --hover: #ffdcd5;
         --positive: #449f4c;
         --positive-contrast: #ffffff;
         --negative: #943030;
         --negative-contrast: #ffffff;
-        --disabled: #647275;
+        --disabled: #576062;
         --roundness: 4px;
     }
 }
@@ -112,6 +112,8 @@ button, ::part(button), .button {
     }
 
     &:disabled {
+        --bg: var(--disabled);
+
         color: var(--bg);
         background-color: transparent;
         border-color: var(--bg);
@@ -124,6 +126,8 @@ button, ::part(button), .button {
 }
 
 ::part(button):disabled {
+    --bg: var(--disabled);
+
     color: var(--bg);
     background-color: transparent;
     border-color: var(--bg);
@@ -150,4 +154,24 @@ input[type="color"], ::part(input color) {
     
     border: 2px solid var(--foreground);
     border-radius: var(--roundness);
+}
+
+select {
+    appearance: none;
+
+    padding: 0.5em;
+
+    color: var(--foreground);
+    background-color: var(--background);
+
+    border: 2px solid var(--foreground);
+    border-radius: var(--roundness);
+
+    &::before {
+        display: block;
+        width: 40px;
+        height: 40px;
+
+        content: "v";
+    }
 }

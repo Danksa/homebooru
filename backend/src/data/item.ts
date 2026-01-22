@@ -88,7 +88,7 @@ export const Item = <Data>(parser: (data: unknown) => Data, directory: string, d
                 const { filePath, accessTime } = this.cached;
                 try {
                     const stats = await stat(filePath);
-                    if(stats.mtimeMs <= accessTime)
+                    if(Math.floor(stats.mtimeMs) <= accessTime)
                         return;
 
                     await this.updateCache(filePath);
@@ -108,7 +108,7 @@ export const Item = <Data>(parser: (data: unknown) => Data, directory: string, d
                 const json = parser(JSON.parse(content));
 
                 this.cached = {
-                    accessTime: stats.mtimeMs,
+                    accessTime: Math.floor(stats.mtimeMs),
                     filePath,
                     data: json
                 };

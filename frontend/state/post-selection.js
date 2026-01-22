@@ -35,6 +35,10 @@ class PostSelection extends EventTarget {
         for(const id of ids)
             this.dispatchEvent(new CustomEvent("selection-toggle", { detail: { id, selected: false } }));
     }
+    
+    count() {
+        return this.selection().length;
+    }
 
     #saveSelection(selection) {
         window.localStorage.setItem(this.#storageKey, JSON.stringify(selection));

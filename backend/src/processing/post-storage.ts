@@ -27,14 +27,19 @@ class PostStorage {
             if(posts.length >= count)
                 break;
 
+            if(tags != null) {
+                const postTagIds = await postTagsStorage.tagIds(post.id);
+                const matching = tags.every(([id, excluded]) => excluded ? !postTagIds.has(id) : postTagIds.has(id));
+                if(!matching)
+                    continue;
+            }
+
             if(skipped < start) {
                 skipped += 1;
                 continue;
             }
 
-            const postTagIds = await postTagsStorage.tagIds(post.id);
-            if(tags == null || tags.every(([id, excluded]) => excluded ? !postTagIds.has(id) : postTagIds.has(id)))
-                posts.push(post);
+            posts.push(post);
         }
         return posts;
     }

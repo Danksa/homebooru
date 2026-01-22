@@ -49,6 +49,9 @@
                 bottom: 1em;
                 left: 1em;
 
+                color: transparent;
+                text-shadow: 0 0 0 var(--background);
+
                 box-shadow: 2px 2px 4px black;
             }
 
@@ -140,6 +143,9 @@
             <posts-nav style="width: 100%" grid="posts"></posts-nav>
         </main>
         <aside id="masstag-menu">
+            <h1>Tags</h1>
+            <tag-list id="tags" show-count></tag-list>
+
             <h1>Mass Tag</h1>
             <mass-tag-menu></mass-tag-menu>
         </aside>

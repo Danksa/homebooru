@@ -29,11 +29,14 @@ ul {
     }
 
     li {
+        --tag-color: var(--foreground);
+
+        color: var(--tag-color);
         cursor: pointer;
 
         &.selected {
             color: var(--background);
-            background-color: var(--foreground);
+            background-color: lch(from var(--tag-color) calc(l + 20) c h);
         }
 
         &:hover {

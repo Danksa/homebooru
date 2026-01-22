@@ -32,13 +32,20 @@ export class TagList extends HTMLElement {
         const showEdit = this.hasAttribute("show-edit");
         const showRemove = this.hasAttribute("show-remove");
         const showCount = this.hasAttribute("show-count");
+        const sort = this.hasAttribute("sort");
+        
+        if(sort) {
+            tags.sort((a, b) => {
+                const nameOrder = a.name.localeCompare(b.name);
 
-        tags.sort((a, b) => {
-            if(a.category == null || b.category == null)
-                return 0;
+                if(a.category == null || b.category == null)
+                    return nameOrder;
 
-            return a.category.localeCompare(b.category);
-        });
+                const categoryOrder = a.category.localeCompare(b.category);
+
+                return categoryOrder === 0 ? nameOrder : categoryOrder;
+            });
+        }
 
         let lastCategory = undefined;
 

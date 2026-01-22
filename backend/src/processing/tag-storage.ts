@@ -1,8 +1,10 @@
 import { config } from "../config.js";
+import { Category } from "../data/category.js";
 import { JsonFileBasedRepository } from "../data/json-file-based-repository.js";
 import { TagRepository } from "../data/tag-repository.js";
 import { Tag } from "../data/tag.js";
 import { TagSchema } from "../data/tag.schema.js";
+import { categoryStorage } from "./category-storage.js";
 import { postTagsStorage } from "./post-tags-storage.js";
 
 class TagStorage {
@@ -39,28 +41,35 @@ class TagStorage {
         return names.includes(name);
     }
 
-    create(name: string): Promise<Tag> {
-        return this.repo.create({ name, category: null });
+    create(name: string, category?: number): Promise<Tag> {
+        return this.repo.create({ name, category: category ?? null });
     }
 
     delete(id: number): Promise<void> {
         return this.repo.get(id).delete();
     }
 
-    async suggestions(search: string, maxResults: number = 10): Promise<ReadonlyArray<string>> {
-        const matches = new Array<readonly [name: string, count: number]>();
+    async suggestions(search: string, maxResults: number = 10): Promise<ReadonlyArray<{ name: string; count: number; color: string }>> {
+        const matches = new Array<{ name: string; count: number; color: string }>();
         for await (const tag of this.repo.list()) {
             const data = await tag.data();
             const tagName = data.name;
             if(tagName.includes(search)) {
                 const postCount = await postTagsStorage.postCount(tag.id);
-                matches.push([tagName, postCount]);
+                const color = data.category != null
+                    ? (await categoryStorage.category(data.category).data()).color
+                    : Category.DefaultColor;
+                matches.push({
+                    name: tagName,
+                    count: postCount,
+                    color
+                });
             }
         }
 
-        matches.sort(([_a, countA], [_b, countB]) => countB - countA);
+        matches.sort(({ count: countA }, { count: countB }) => countB - countA);
 
-        return matches.slice(0, maxResults).map(([name]) => name);
+        return matches.slice(0, maxResults);
     }
 
     async names(): Promise<ReadonlyArray<string>> {

@@ -3,16 +3,18 @@ import { Tag } from "../../data/tag.js";
 import { tagStorage } from "../../processing/tag-storage.js";
 import Compile from "typebox/compile";
 import Type from "typebox";
+import { categoryStorage } from "../../processing/category-storage.js";
 
 const Body = Type.Object({
-    name: Type.String()
+    name: Type.String(),
+    category: Type.Union([Type.Number(), Type.Null()])
 });
 
 const BodyParser = Compile(Body);
 
 export const createTag: RequestHandler = async (req, res) => {
     try {
-        const { name } = BodyParser.Parse(req.body);
+        const { name, category: categoryId } = BodyParser.Parse(req.body);
         const sanitized = Tag.sanitizedName(name);
         console.log(`Creating tag: "${name}" -> "${sanitized}"`);
 
@@ -29,7 +31,12 @@ export const createTag: RequestHandler = async (req, res) => {
             return;
         }
 
-        await tagStorage.create(sanitized);
+        let category: number | undefined = undefined;
+        if(categoryId != null && await categoryStorage.category(categoryId).exists()) {
+            category = categoryId;
+        }
+
+        await tagStorage.create(sanitized, category);
 
         res.end();
     } catch (error) {

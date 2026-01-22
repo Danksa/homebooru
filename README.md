@@ -14,14 +14,16 @@ Currently homebooru supports:
 - Display posts (obviously!)
 - Mass-tagging posts
 - Tag categories
+- Show most frequent tags on posts page
 
 ## Next goals
-- Show most frequent tags on posts page
 - Tag aliases
+- Tag merging
+- Tag implications
 
 ## What does it not do? (for now)
 - Duplicate detection
-- Tag implications
+- Uploading files directly from other sites
 
 ## Requirements
 The backend server needs:
@@ -51,6 +53,8 @@ The frontend requires any static webserver of your choosing.
 
 ### Browsing tags
 <img src="doc/screenshots/tags.png" alt="Screenshot of the tags list" height="400px" />
+<img src="doc/screenshots/tag-edit.png" alt="Screenshot of the tags list" height="400px" />
+<img src="doc/screenshots/category-edit.png" alt="Screenshot of the tags list" height="400px" />
 
 ## Installation
 I added an installation script which will install the backend and frontend on the same machine, using `nginx` as the HTTP server. The `$DATA` (see [backend readme](backend/README.md) for details) path is set to `/mnt` by default, it can be changed if you edit the `install` file.
