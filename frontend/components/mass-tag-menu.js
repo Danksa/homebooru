@@ -88,7 +88,10 @@ class MassTagMenu extends CustomElement {
 
     onActionButtonClicked() {
         if(massTag.active()) {
-            massTag.apply();
+            this.actionButton.disabled = true;
+            massTag.apply().finally(() => {
+                this.actionButton.disabled = false;
+            });
         } else {
             massTag.toggle(true);
         }
