@@ -46,6 +46,13 @@ class MassTagMenu extends CustomElement {
         this.#tags = [];
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+
+        this.#tags = massTag.tags();
+        this.tagList.tags = this.#tags.map(tag => ({ name: tag }));
+    }
+
     #updateActionButton(massTagActive) {
         this.actionButton.textContent = massTagActive ? "Apply" : "Start tagging";
     }
