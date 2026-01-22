@@ -4,6 +4,7 @@ import { create } from "../util/template.js";
 import { CustomElement } from "./custom-element.js";
 import "./add-tag-input.js";
 import "./tag-list.js";
+import { postSelection } from "../state/post-selection.js";
 
 class MassTagMenu extends CustomElement {
     #tags;
@@ -17,6 +18,10 @@ class MassTagMenu extends CustomElement {
         const template = create(`
             <add-tag-input id="addTagInput" exportparts="button, input, text"></add-tag-input>
             <tag-list id="tagList" show-remove exportparts="button, input, text"></tag-list>
+            <hr />
+            <p id="countText">
+                <span id="count">0</span> posts selected
+            </p>
             <div class="button-row">
                 <button id="cancelButton" part="button">Cancel</button>
                 <button id="actionButton" part="button"></button>
@@ -24,7 +29,7 @@ class MassTagMenu extends CustomElement {
         `);
         shadow.append(...template.elements);
 
-        const { addTagInput, tagList, actionButton, cancelButton } = template.namedElements;
+        const { addTagInput, tagList, actionButton, cancelButton, count, countText } = template.namedElements;
 
         this.registerListener(addTagInput, "submit", this.onTagAdded);
         this.addTagInput = addTagInput;
@@ -41,7 +46,15 @@ class MassTagMenu extends CustomElement {
         this.registerListener(cancelButton, "click", this.onCancelButtonClicked);
         this.cancelButton = cancelButton;
 
+        countText.classList.toggle("disabled", !massTag.active());
+        this.countText = countText;
+
+        count.textContent = postSelection.count();
+        this.count = count;
+
         this.registerListener(massTag, "toggle", this.onMassTagToggle);
+
+        this.registerListener(postSelection, "selection-toggle", this.onSelectionToggle);
 
         this.#tags = [];
     }
@@ -89,11 +102,16 @@ class MassTagMenu extends CustomElement {
         const active = event.detail;
         this.#updateActionButton(active);
         this.cancelButton.disabled = !active;
+        this.countText.classList.toggle("disabled", !active);
 
         if(!active) {
             this.#tags.length = 0;
             this.tagList.tags = this.#tags;
         }
+    }
+
+    onSelectionToggle() {
+        this.count.textContent = postSelection.count();
     }
 }
 
