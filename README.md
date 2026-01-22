@@ -14,14 +14,16 @@ Currently homebooru supports:
 - Display posts (obviously!)
 - Mass-tagging posts
 - Tag categories
+- Show most frequent tags on posts page
 
 ## Next goals
-- Show most frequent tags on posts page
 - Tag aliases
+- Tag merging
+- Tag implications
 
 ## What does it not do? (for now)
 - Duplicate detection
-- Tag implications
+- Uploading files directly from other sites
 
 ## Requirements
 The backend server needs:
