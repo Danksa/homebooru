@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+
+# The version to update to
+VERSION="v1.2.0"
+
+# URL to the zipped release
+RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
+
+# You can alternatively specify a path to the downloaded release
+#RELEASE_SOURCE="./package/homebooru-$VERSION.tar.gz"
+
+# Directory of the frontend files
+FRONTEND_DIR="${FRONTEND_DIR:-/srv/www/homebooru}"
+
+# Directory of the backend files
+BACKEND_DIR="${BACKEND_DIR:-/opt/homebooru}"
+
+# The port the backend is running on
+BACKEND_PORT=3000
+
+# Some other constants to make my life in this script easier
+VERSION_DIR="homebooru-$VERSION"
+ARCHIVE_NAME="$VERSION_DIR.tar.gz"
+TEMP_DIR="/tmp/homebooru-install"
+
+detect_user_and_group() {
+    BOORU_USER=$(stat "%U" "$BACKEND_DIR")
+    BOORU_GROUP=$(stat "%G" "$BACKEND_DIR")
+
+    if [ -z "$BOORU_USER" ]; then
+        echo -e "\033[31;1mCould not determine user from backend path $BACKEND_DIR\033[0m"
+    fi
+
+    if [ -z "$BOORU_GROUP" ]; then
+        echo -e "\033[31;1mCould not determine group from backend path $BACKEND_DIR\033[0m"
+    fi
+}
+
+print_summary() {
+    echo
+    echo "The update will proceed with the following configuration:"
+    echo
+
+    echo -e "\033[33;1mUser: \033[34m$BOORU_USER\033[0m"
+    echo -e "\033[33;1mGroup: \033[34m$BOORU_GROUP\033[0m"
+
+    echo -e "\033[33;1mFrontend Directory: \033[34m$FRONTEND_DIR\033[0m"
+    echo -e "\033[33;1mBackend Directory: \033[34m$BACKEND_DIR\033[0m"
+}
+
+download_release() {
+    echo -e "\033[33;1mDownloading release\033[0m"
+    rm -rf "$TEMP_DIR"
+    mkdir -p "$TEMP_DIR"
+
+    if [[ $RELEASE_SOURCE == "http"* ]]; then
+        wget -o "$TEMP_DIR/$ARCHIVE_NAME" "$RELEASE_SOURCE"
+    else
+        cp "$RELEASE_SOURCE" "$TEMP_DIR/$ARCHIVE_NAME"
+    fi
+}
+
+extract_archive() {
+    echo -e "\033[33;1mExtracting archive\033[0m"
+    pushd "$TEMP_DIR" &> /dev/null
+        tar -xzf "$ARCHIVE_NAME"
+    popd &> /dev/null
+}
+
+trim_whitespace() {
+    local trimmed="$1"
+    trimmed="${trimmed#"${trimmed%%[![:space:]]*}"}"
+    trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
+    echo "$trimmed"
+}
+
+update_frontend_config() {
+    echo -e "\033[33;1mReading settings from old config.js\033[0m"
+
+    declare -A settings
+    while read -r line; do
+        if [[ $line == "export const "* ]]; then
+            IFS='=' read -ra split <<< "$line"
+            left=$(trim_whitespace "${split[0]}")
+            right=$(trim_whitespace "${split[1]}")
+
+            left_split=$(awk -F "export const" '{print $2}' <<< "$left")
+            setting_name=$(trim_whitespace "$left_split")
+
+            right_split=$(awk -F ";" '{print $1}' <<< "$right")
+            setting_value=$(trim_whitespace "$right_split")
+            
+            settings[$setting_name]="$setting_value"
+        fi
+    done < "$FRONTEND_DIR/config.js.bak"
+
+    echo -e "\033[33;1mApplying old settings to new config.js\033[0m"
+    for name in "${!settings[@]}"; do
+        value=${settings[$name]}
+        sed -i "s|export const $name .*|export const $name = $value;|" "$FRONTEND_DIR/config.js"
+    done
+}
+
+update_frontend() {
+    echo -e "\033[33;1mBacking up old config.js as config.js.bak\033[0m"
+    cp "$FRONTEND_DIR/config.js" "$FRONTEND_DIR/config.js.bak"
+
+    echo -e "\033[33;1mCopying frontend files\033[0m"
+    cp -r "$TEMP_DIR/$VERSION_DIR/frontend"/* "$FRONTEND_DIR"
+    echo -e "\033[33;1mChanging ownership to $BOORU_USER\033[0m"
+    chown -R "$BOORU_USER:$BOORU_GROUP" "$FRONTEND_DIR"
+
+    update_frontend_config
+}
+
+update_backend() {
+    echo -e "\033[33;1mStopping service\033[0m"
+    systemctl stop homebooru.service
+
+    echo -e "\033[33;1mCopying backend files\033[0m"
+    cp -r "$TEMP_DIR/$VERSION_DIR/backend"/* "$BACKEND_DIR"
+    echo -e "\033[33;1mChanging ownership to $BOORU_USER\033[0m"
+    chown -R "$BOORU_USER:$BOORU_GROUP" "$BACKEND_DIR"
+
+    echo -e "\033[33;1mUpdating dependencies\033[0m"
+    pushd "$BACKEND_DIR" &> /dev/null
+        npm install --omit=dev
+    popd &> /dev/null
+
+    echo -e "\033[33;1mRestarting service\033[0m"
+    systemctl start homebooru.service
+}
+
+clear_temp() {
+    rm -rf "$TEMP_DIR"
+}
+
+run_update() {
+    create_user_and_group
+    download_release
+    extract_archive
+    update_frontend
+    update_backend
+    clear_temp
+
+    echo -e "\033[33;1mInstallation finished! You should be able to access your homebooru at $SERVER_URL\033[0m"
+}
+
+detect_user_and_group $@
+
+print_summary
+
+echo -n -e "\033[31;1mContinue with the above settings? [y/N] \033[0m"
+read -e choice
+[[ "$choice" == [Yy]* ]] || exit 0
+
+run_update
