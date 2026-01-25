@@ -21,18 +21,15 @@ I created an install script to automatically install everything. It fetches the 
 
 This script was mainly created for use in a LXC container in Proxmox (with another disk mounted to `/mnt`).
 
-Just run the following as root:
+Just download the script and run it as root:
 
 ``` sh
-wget -q -O - https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/install | bash
+wget https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/install
+chmod u+x install
+./install
 ```
 
-or, if you use curl:
-``` sh
-curl -sSL https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/install | bash
-```
-
-You can also clone this repo/download just the `install` script and modify it to change some directories, if needed.
+You can also modify it before running to change some directories, if needed.
 
 > [!NOTE]
 > The system is required to have `npm`, `nodejs`, `nginx`, `wget`, `tar`, `ffmpeg` and `imagemagick` installed already
@@ -48,12 +45,16 @@ The `update` script will update your homebooru by:
 
 To update your homebooru you can use the `update` script pretty much like you use the `install` script:
 ``` sh
-wget -q -O - https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/update | bash
+wget https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/update
+chmod u+x update
+./update
 ```
 
 if you use non-default directories for your frontend or backend, supply them as environment variables:
 ``` sh
-wget -q -O - https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/update | FRONTEND_DIR="/srv/somewhere" BACKEND_DIR="/usr/local/somewhere" bash
+wget https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/update
+chmod u+x update
+FRONTEND_DIR="/srv/somewhere" BACKEND_DIR="/usr/local/somewhere" ./update
 ```
 
 ## Features
