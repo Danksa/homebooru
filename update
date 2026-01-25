@@ -15,9 +15,6 @@ FRONTEND_DIR="${FRONTEND_DIR:-/srv/www/homebooru}"
 # Directory of the backend files
 BACKEND_DIR="${BACKEND_DIR:-/opt/homebooru}"
 
-# The port the backend is running on
-BACKEND_PORT=3000
-
 # Some other constants to make my life in this script easier
 VERSION_DIR="homebooru-$VERSION"
 ARCHIVE_NAME="$VERSION_DIR.tar.gz"
