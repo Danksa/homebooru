@@ -3,6 +3,10 @@
 # The version to install
 VERSION="v1.2.2"
 
+# Some intermediary variables
+VERSION_DIR="homebooru-$VERSION"
+ARCHIVE_NAME="$VERSION_DIR.tar.gz"
+
 # URL to the zipped release
 RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
 
@@ -29,8 +33,6 @@ SERVER_URL=$SERVER_URL
 BACKEND_PORT=3000
 
 # Some other constants to make my life in this script easier
-VERSION_DIR="homebooru-$VERSION"
-ARCHIVE_NAME="$VERSION_DIR.tar.gz"
 SERVICE_DIR="/etc/systemd/system"
 NGINX_DIR="/etc/nginx"
 TEMP_DIR="/tmp/homebooru-install"

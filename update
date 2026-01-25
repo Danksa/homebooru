@@ -3,6 +3,10 @@
 # The version to update to
 VERSION="v1.2.2"
 
+# Some intermediary variables
+VERSION_DIR="homebooru-$VERSION"
+ARCHIVE_NAME="$VERSION_DIR.tar.gz"
+
 # URL to the zipped release
 RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
 
@@ -16,8 +20,6 @@ FRONTEND_DIR="${FRONTEND_DIR:-/srv/www/homebooru}"
 BACKEND_DIR="${BACKEND_DIR:-/opt/homebooru}"
 
 # Some other constants to make my life in this script easier
-VERSION_DIR="homebooru-$VERSION"
-ARCHIVE_NAME="$VERSION_DIR.tar.gz"
 TEMP_DIR="/tmp/homebooru-install"
 
 detect_user_and_group() {
