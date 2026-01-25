@@ -5,3 +5,6 @@ build/
 # Test Data
 /backend/data/
 /frontend/data
+
+# Packaged Files
+/package

@@ -4,9 +4,12 @@ After=network.target
 
 [Service]
 Type=exec
-Environment=
-ExecStart=node /opt/homebooru/index.js
-WorkingDirectory=/opt/homebooru
+Environment="DATA_DIRECTORY=$DATA_DIR"
+Environment=PORT=$BACKEND_PORT
+ExecStart=node $BACKEND_DIR/index.js
+WorkingDirectory=$BACKEND_DIR
+User=$BOORU_USER
+Group=$BOORU_GROUP
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=homebooru

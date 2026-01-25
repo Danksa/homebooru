@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+PACKAGE_DIR="./package"
+BACKEND_DIR="./backend"
+FRONTEND_DIR="./frontend"
+
+VERSION=v$(jq -r .version "$BACKEND_DIR/package.json")
+
+VERSION_DIR="homebooru-$VERSION"
+BUILD_DIR="$PACKAGE_DIR/$VERSION_DIR"
+
+build_backend() {
+    echo -e "\033[32mBuilding Backend...\033[0m"
+    pushd "$BACKEND_DIR" &> /dev/null
+        npm run build
+    popd &> /dev/null
+}
+
+package() {
+    echo -e "\033[32mPackaging...\033[0m"
+    mkdir -p "$BUILD_DIR"
+
+    mv "$BACKEND_DIR"/build "$BUILD_DIR/backend"
+
+    mkdir "$BUILD_DIR/frontend"
+    cp -r "$FRONTEND_DIR"/* "$BUILD_DIR/frontend"
+
+    cp homebooru.conf "$BUILD_DIR"
+    cp homebooru.service "$BUILD_DIR"
+}
+
+compress() {
+    echo -e "\033[32mCreating Compressed Archive...\033[0m"
+    pushd "$PACKAGE_DIR" &> /dev/null
+        tar -czf "homebooru-$VERSION.tar.gz" "$VERSION_DIR"
+    popd &> /dev/null
+}
+
+clear_build_files() {
+    echo -e "\033[32mClearing Build Files...\033[0m"
+    rm -rf "$BUILD_DIR"
+}
+
+echo -e "\033[32mCreating Package for Version \033[33;1m$VERSION\033[0m"
+build_backend
+package
+compress
+clear_build_files
+echo -e "\033[1;32mDone!\033[0m"

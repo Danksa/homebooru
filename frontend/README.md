@@ -6,7 +6,7 @@ The frontend consists only of static HTML, CSS and JS files, so no further proce
 The frontend assumes that posts are available on `http(s)://<hostname>/data/posts` and thumbnails on `http(s)://<hostname>/data/thumbnails` (can be changed in the [config](config.js)), so make sure that you symlink the `$DATA` directory of your backend to `./data` (only read-only permissions are required).
 
 ## Configuration
-Some things like the amount of posts per page can be configured in the [config file](config.js).
+The posts displayed per page, the backend URL and other things can be configured in the [config.js file](config.js).
 
 ## Styling
 You can adjust the colors and roundness of elements at the top of the [base.css](base.css).
