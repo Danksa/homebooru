@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx --watch src/index.ts",
-    "build": "rm -rf build/* && tsc -p tsconfig.json && cp package.json build/ && cp -r node_modules build/"
+    "build": "rm -rf build/* && tsc -p tsconfig.json && cp package.json package-lock.json build/"
   },
   "author": "Daniel Spindler",
   "license": "MIT",

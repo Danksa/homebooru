@@ -2,45 +2,98 @@
 
 set -e
 
-backendInstallPath="/opt/homebooru"
-frontendInstallPath="/srv/www/homebooru"
-dataPath="/mnt" # Where the posts, tags etc. are stored
+BOORU_USER=$BOORU_USER
+BOORU_GROUP=$BOORU_GROUP
+FRONTEND_DIR="/srv/www/homebooru"
+BACKEND_DIR="/opt/homebooru"
+DATA_DIR="/mnt"
 
-echo "Please enter the URL your server will use (e.g. http://localhost or http://homebooru.mylocaldomain.internal):"
-read serverUrl
+specify_user_and_group() {
+    while getopts "u:g:" flag &> /dev/null; do
+        case $flag in
+            u)
+                BOORU_USER=$OPTARG
+                ;;
+            g)
+                BOORU_GROUP=$OPTARG
+                ;;
+        esac
+    done
 
-if [[ -z "$serverUrl" ]]; then
-    echo "Invalid server URL, exiting"
-fi
+    if [ -z "$BOORU_USER" ]; then
+        read -p "User to use for the backend server: " BOORU_USER
+    fi
 
-echo Building backend
+    if [ -z "$BOORU_GROUP" ]; then
+        read -p "Group to use for the backend server: " BOORU_GROUP
+    fi
+}
 
-pushd backend &>/dev/null
-npm install
-npm run build
-popd &>/dev/null
+print_summary() {
+    echo
+    echo "The installation will proceed with the following configuration:"
+    echo
 
-echo Installing backend
-sudo mkdir -p "$backendInstallPath"
-sudo cp -r backend/build/* "$backendInstallPath"
+    echo -e "\033[33;1mUser: \033[34m$BOORU_USER\033[0m"
+    if ! id "$BOORU_USER" &> /dev/null; then
+        echo -e "\033[32m=> currently does not exist, will be created\033[0m"
+    fi
+    echo
 
-echo Adding service
-sudo cp homebooru.service /etc/systemd/system
+    echo -e "\033[33;1mGroup: \033[34m$BOORU_GROUP\033[0m"
+    if ! id "$BOORU_GROUP" &> /dev/null; then
+        echo -e "\033[32m=> currently does not exist, will be created\033[0m"
+    fi
+    echo
 
-sudo sed -i 's|^Environment=|Environment="DATA_DIRECTORY='"$dataPath"'"|' '/etc/systemd/system/homebooru.service'
+    echo -e "\033[33;1mFrontend Directory: \033[34m$FRONTEND_DIR\033[0m"
+    echo -e "\033[33;1mBackend Directory: \033[34m$BACKEND_DIR\033[0m"
+    echo -e "\033[33;1mData Directory: \033[34m$DATA_DIR\033[0m"
+}
 
-echo Enabling and starting service
-sudo systemctl enable --now homebooru.service
+specify_user_and_group $@
 
-echo Installing frontend
-sudo mkdir -p "$frontendInstallPath"
-sudo cp -r frontend/* "$frontendInstallPath"
-sudo ln -s "$dataPath" "$frontendInstallPath/data"
-sudo sed -i 's|^export const backendUrl = .*|export const backendUrl = "'"$serverUrl"':3000"|' "$backendInstallPath/config.js"
+print_summary
 
-echo Setting up nginx
-sudo cp homebooru.conf /etc/nginx/sites-available
-sudo ln -s /etc/nginx/sites-available/homebooru.conf /etc/nginx/sites-enabled/homebooru.conf
+#backendInstallPath="/opt/homebooru"
+#frontendInstallPath="/srv/www/homebooru"
+#dataPath="/mnt" # Where the posts, tags etc. are stored
 
-echo Restarting nginx
-sudo systemctl restart nginx
+#echo "Please enter the URL your server will use (e.g. http://localhost or http://homebooru.mylocaldomain.internal):"
+#read serverUrl
+
+#if [[ -z "$serverUrl" ]]; then
+#    echo "Invalid server URL, exiting"
+#fi
+
+#echo Building backend
+
+#pushd backend &>/dev/null
+#npm install
+#npm run build
+#popd &>/dev/null
+
+#echo Installing backend
+#sudo mkdir -p "$backendInstallPath"
+#sudo cp -r backend/build/* "$backendInstallPath"
+
+#echo Adding service
+#sudo cp homebooru.service /etc/systemd/system
+
+#sudo sed -i 's|^Environment=|Environment="DATA_DIRECTORY='"$dataPath"'"|' '/etc/systemd/system/homebooru.service'
+
+#echo Enabling and starting service
+#sudo systemctl enable --now homebooru.service
+
+#echo Installing frontend
+#sudo mkdir -p "$frontendInstallPath"
+#sudo cp -r frontend/* "$frontendInstallPath"
+#sudo ln -s "$dataPath" "$frontendInstallPath/data"
+#sudo sed -i 's|^export const backendUrl = .*|export const backendUrl = "'"$serverUrl"':3000"|' "$backendInstallPath/config.js"
+
+#echo Setting up nginx
+#sudo cp homebooru.conf /etc/nginx/sites-available
+#sudo ln -s /etc/nginx/sites-available/homebooru.conf /etc/nginx/sites-enabled/homebooru.conf
+
+#echo Restarting nginx
+#sudo systemctl restart nginx
