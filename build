@@ -25,6 +25,9 @@ package() {
     mkdir "$BUILD_DIR/frontend"
     cp -r "$FRONTEND_DIR"/* "$BUILD_DIR/frontend"
 
+    # Remove development symlink
+    rm "$BUILD_DIR/frontend/data"
+
     cp homebooru.conf "$BUILD_DIR"
     cp homebooru.service "$BUILD_DIR"
 }
