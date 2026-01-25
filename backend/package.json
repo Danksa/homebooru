@@ -1,12 +1,12 @@
 {
   "name": "backend",
   "type": "module",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The backend for the homebooru image board",
   "main": "index.js",
   "scripts": {
     "start": "tsx --watch src/index.ts",
-    "build": "rm -rf build/* && tsc -p tsconfig.json && cp package.json build/ && cp -r node_modules build/"
+    "build": "rm -rf build/* && tsc -p tsconfig.json && cp package.json package-lock.json build/"
   },
   "author": "Daniel Spindler",
   "license": "MIT",

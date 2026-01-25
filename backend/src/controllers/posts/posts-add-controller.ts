@@ -4,6 +4,7 @@ import { postTagsStorage } from "../../processing/post-tags-storage.js";
 import { ParseError } from "typebox/value";
 import Type from "typebox";
 import Compile from "typebox/compile";
+import { Tag } from "../../data/tag.js";
 
 const Query = Type.Object({
     id: Type.Integer({ minimum: 0 })
@@ -28,7 +29,8 @@ export const addPostTags: RequestHandler = async (req, res) => {
         const parsed = BodyParser.Parse(req.body);
 
         const names = "names" in parsed ? parsed.names : [parsed.name];
-        for(const name of names) {
+        const sanitized = names.map(Tag.sanitizedName);
+        for(const name of sanitized) {
             let tagId: number | null = null;
             try {
                 tagId = await tagStorage.tagId(name);
