@@ -1,19 +1,34 @@
 #!/usr/bin/env bash
 
-#set -e
-
+# The version to install
 VERSION="v1.2.0"
-RELEASE_SOURCE="./package/homebooru-$VERSION.tar.gz"
-#RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
 
+# URL to the zipped release
+RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
+
+# You can alternatively specify a path to the downloaded release
+#RELEASE_SOURCE="./package/homebooru-$VERSION.tar.gz"
+
+# User and group with which to run homebooru
 BOORU_USER=$BOORU_USER
 BOORU_GROUP=$BOORU_GROUP
+
+# Directory of the frontend files
 FRONTEND_DIR="${FRONTEND_DIR:-/srv/www/homebooru}"
+
+# Directory of the backend files
 BACKEND_DIR="${BACKEND_DIR:-/opt/homebooru}"
+
+# This is where all data is stored, this includes posts, thumbnails, tags etc.
 DATA_DIR="${DATA_DIR:-/mnt}"
+
+# The URL of the (backend) server. Can be changed in the config.js of the frontend afterwards
 SERVER_URL="${SERVER_URL:-http://localhost}"
+
+# The port the backend is running on
 BACKEND_PORT=3000
 
+# Some other constants to make my life in this script easier
 VERSION_DIR="homebooru-$VERSION"
 ARCHIVE_NAME="$VERSION_DIR.tar.gz"
 SERVICE_DIR="/etc/systemd/system"
@@ -30,7 +45,6 @@ ensure_dependencies() {
         echo -e "Missing \033[33;1mtar\033[0m, please install it first"
         exit 1
     fi
-
 
     if ! command -v "git" &> /dev/null; then
         echo -e "Missing \033[33;1mgit\033[0m, please install it first"
@@ -189,7 +203,8 @@ setup_backend() {
 
     echo -e "\033[33;1mSetting-up service\033[0m"
     export DATA_DIR BACKEND_DIR BOORU_USER BOORU_GROUP BACKEND_PORT
-    cat "$TEMP_DIR/$VERSION_DIR/homebooru.service" | envsubst '$DATA_DIR' '$BACKEND_DIR' '$BOORU_USER' '$BOORU_GROUP' '$BACKEND_PORT' > "$SERVICE_DIR/homebooru.service"
+    cat "$TEMP_DIR/$VERSION_DIR/homebooru.service" | envsubst > "$SERVICE_DIR/homebooru.service"
+    systemctl daemon-reload
 
     echo -e "\033[33;1mStarting service\033[0m"
     systemctl enable --now homebooru.service
