@@ -23,7 +23,7 @@ BACKEND_DIR="${BACKEND_DIR:-/opt/homebooru}"
 DATA_DIR="${DATA_DIR:-/mnt}"
 
 # The URL of the (backend) server. Can be changed in the config.js of the frontend afterwards
-SERVER_URL="${SERVER_URL:-http://localhost}"
+SERVER_URL=$SERVER_URL
 
 # The port the backend is running on
 BACKEND_PORT=3000
@@ -43,11 +43,6 @@ ensure_dependencies() {
 
     if ! command -v "tar" &> /dev/null; then
         echo -e "Missing \033[33;1mtar\033[0m, please install it first"
-        exit 1
-    fi
-
-    if ! command -v "git" &> /dev/null; then
-        echo -e "Missing \033[33;1mgit\033[0m, please install it first"
         exit 1
     fi
 
@@ -94,6 +89,10 @@ specify_user_and_group_and_url() {
     if [ -z "$BOORU_GROUP" ]; then
         read -p "Group to use for the backend server: " BOORU_GROUP
     fi
+
+    if [ -z "$BOORU_GROUP" ]; then
+        read -p "Please specify the URL from which you'll reach this server (e. g. http://localhost or http://homebooru.internal): " SERVER_URL
+    fi
 }
 
 print_summary() {
@@ -113,7 +112,7 @@ print_summary() {
     fi
     echo
 
-    echo -e "\033[33;1mServer URL: \033[34m$SERVER_URL (can be changed with the \"-d <URL>\" option)\033[0m"
+    echo -e "\033[33;1mServer URL: \033[34m$SERVER_URL\033[0m"
 
     echo -e "\033[33;1mFrontend Directory: \033[34m$FRONTEND_DIR\033[0m"
     echo -e "\033[33;1mBackend Directory: \033[34m$BACKEND_DIR\033[0m"
@@ -171,6 +170,9 @@ copy_files() {
 }
 
 setup_frontend() {
+    # Remove trailing slash, if there is one
+    SERVER_URL=${SERVER_URL%/}
+
     echo -e "\033[33;1mSetting backend URL in config.js\033[0m"
     local replacement="s|^export const backendUrl = .*|export const backendUrl = \"$SERVER_URL:$BACKEND_PORT\";|"
     sed -i "$replacement" "$FRONTEND_DIR/config.js"

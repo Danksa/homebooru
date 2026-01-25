@@ -9,11 +9,6 @@ VERSION=v$(jq -r .version "$BACKEND_DIR/package.json")
 VERSION_DIR="homebooru-$VERSION"
 BUILD_DIR="$PACKAGE_DIR/$VERSION_DIR"
 
-clean() {
-    echo -e "\033[32mCleaning previous Build...\033[0m"
-    rm -rf "$PACKAGE_DIR"
-}
-
 build_backend() {
     echo -e "\033[32mBuilding Backend...\033[0m"
     pushd "$BACKEND_DIR" &> /dev/null
@@ -47,7 +42,6 @@ clear_build_files() {
 }
 
 echo -e "\033[32mCreating Package for Version \033[33;1m$VERSION\033[0m"
-clean
 build_backend
 package
 compress

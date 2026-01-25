@@ -1,67 +1,81 @@
 # homebooru
+A booru-style image board focused on simple data storage (no databases or other additional services, just files).
 
-## Why does this exist?
-I wanted to host my own internal booru-style image board, but other projects like [danbooru](https://github.com/danbooru/danbooru) or [szurubooru](https://github.com/rr-/szurubooru) (which I've used happily for many years!) are either a pain to set up or have many dependencies like redis, databases etc. (and I don't use the docker because I'm an idiot, which makes it harder still).
+<div align="center">
+    <img src="doc/screenshots/posts.png" alt="Screenshot of the posts browser" height="400px" />
+    <img src="doc/screenshots/post.png" alt="Screenshot of a viewed post" height="400px" />
+    <img src="doc/screenshots/tags.png" alt="Screenshot of the tags list" height="400px" />
+    <img src="doc/screenshots/tag-edit.png" alt="Screenshot of the tags list" height="400px" />
+    <img src="doc/screenshots/category-edit.png" alt="Screenshot of the tags list" height="400px" />
+    <img src="doc/screenshots/upload-with-files.png" alt="Screenshot of the upload page with added files" height="400px" />
+</div>
 
-So the goal with this project is to have as few dependencies to other things like databases as possible to make backing up easier (especially for my friends who are much less versed in this stuff). Being ment for internal use also means that there is no concept of users at all, anyone can just upload, edit and delete posts.
+## Installation
+I created an install script to automatically install everything. It fetches the current GitHub release (alternatively you can modify it to use a local release archive) and
+- creates a user and group with which the backend runs
+- install the backend to `/opt/homebooru`
+- install the frontend to `/srv/www/homebooru`
+- save posts etc. in `/mnt`
+- set up nginx as the webserver
+- set up and start a systemd service to run the backend server
 
-## What does it do?
-Currently homebooru supports:
+This script was mainly created for use in a LXC container in Proxmox (with another disk mounted to `/mnt`).
+
+Just run the following as root:
+
+``` sh
+wget -q -O - https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/install | bash
+```
+
+or, if you use curl:
+``` sh
+curl -sSL https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/install | bash
+```
+
+You can also clone this repo/download just the `install` script and modify it to change some directories, if needed.
+
+> [!NOTE]
+> The system is required to have `npm`, `nodejs`, `nginx`, `wget`, `tar`, `ffmpeg` and `imagemagick` installed already
+> I've tested this with `ffmpeg` version 7.1.1 and `imagemagick` version 7.1.1, older versions probably work as well.
+
+## Features
 - Uploading images and videos (now with progress bars!)
-- Importing images and videos from local server directory
+- Importing images and videos from a local server directory
 - Tagging posts
-- Searching for posts by tags
+- Searching for posts by which tags they have (or don't have)
 - Display posts (obviously!)
 - Mass-tagging posts
 - Tag categories
-- Show most frequent tags on posts page
 
-## Next goals
+### Planned
 - Tag aliases
 - Tag merging
 - Tag implications
+- Slideshows
 
-## What does it not do? (for now)
+### Currently not Planned
 - Duplicate detection
 - Uploading files directly from other sites
+- Automatic AI-based tagging
 
-## Requirements
-The backend server needs:
-- `ffmpeg` (tested with version 7.1.1). It's used to generate thumbnails for videos, so older versions are probably working as long as the CLI arguments haven't changed.
-- `imagemagick` (tested with version 7.1.1). Also used for thumbnail generation. As with `ffmpeg` older versions probably work as well.
-- `node` (tested with v20)
+## Development
+To start the development build just clone this directory, install the backend dependencies via npm:
+```
+npm install
+```
 
-The frontend requires any static webserver of your choosing.
+and symlink the `backend/data` directory for the frontend:
+```
+ln -s ../backend/data ./frontend/data
+```
 
-## Screenshots
+Afterwards you can simply run `npm run start` to start the backend.
+For the frontend you'll need some webserver, like [http-server](https://www.npmjs.com/package/http-server).
 
-### Browsing posts
-<img src="doc/screenshots/posts.png" alt="Screenshot of the posts browser" height="400px" />
-<img src="doc/screenshots/posts-bottom.png" alt="Screenshot of the posts browser, scrolled to bottom" height="400px" />
-<img src="doc/screenshots/posts-desktop.png" alt="Screenshot of the posts browser on desktop" height="400px" />
+Then open http://localhost/ and you should be good to go!
 
-### Viewing a post
-<img src="doc/screenshots/post.png" alt="Screenshot of a viewed post" height="400px" />
-<img src="doc/screenshots/post-video.png" alt="Screenshot of a viewed video post" height="400px" />
-<img src="doc/screenshots/post-no-tags.png" alt="Screenshot of a viewed post without assigned tags" height="400px" />
-<img src="doc/screenshots/post-fullscreen.png" alt="Screenshot of a viewed post, with toggled fullscreen" height="400px" />
-<img src="doc/screenshots/post-desktop.png" alt="Screenshot of a viewed post on desktop" height="400px" />
-
-### Uploading
-<img src="doc/screenshots/upload.png" alt="Screenshot of the upload page" height="400px" />
-<img src="doc/screenshots/upload-with-files.png" alt="Screenshot of the upload page with added files" height="400px" />
-
-### Browsing tags
-<img src="doc/screenshots/tags.png" alt="Screenshot of the tags list" height="400px" />
-<img src="doc/screenshots/tag-edit.png" alt="Screenshot of the tags list" height="400px" />
-<img src="doc/screenshots/category-edit.png" alt="Screenshot of the tags list" height="400px" />
-
-## Installation
-I added an installation script which will install the backend and frontend on the same machine, using `nginx` as the HTTP server. The `$DATA` (see [backend readme](backend/README.md) for details) path is set to `/mnt` by default, it can be changed if you edit the `install` file.
-
-The backend will be put in `/opt/homebooru` and the static frontend files in `/srv/www/homebooru`. You can change them by editing the `install` file.
-
-A systemd unit is used to automatically start the backend.
+### Creating a Release Archive
+To build an archive to later install using the install script simply run the `build` command. It will extract the version from the backend `package.json` and create an archive named `homebooru-v<VERSION>.tar.gz` inside the `package` folder.
 
 ## How does it work?
 This project consists of two components:

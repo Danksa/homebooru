@@ -15,3 +15,26 @@ The `$DATA` directory is divided into the following subdirectories:
 - `$DATA/categories` categories are stored here. Similar to tags in a JSON format with the file name `<CATEGORY ID>.json`.
 
 So to backup your whole homebooru you only need to backup the `$DATA` directory.
+
+## Default Thumbnail
+You can an image named `default.png` inside the `$DATA/thumbnails` directory. This thumbnail will be used for all posts where no thumbnail exists.
+
+## Example
+A `$DATA` directory with some posts and tags might look like this:
+```
+$DATA
+├─ posts
+│  ├─ 1.mp4
+│  └─ 2.jpg
+├─ thumbnails
+│  ├─ 1.png
+│  ├─ 2.png
+│  └─ default.png
+├─ tags
+│  └─ 1.json
+├─ categories
+│  └─ 1.json
+├─ uploads
+├─ imports
+└─ post-tags.txt
+```
