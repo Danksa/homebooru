@@ -90,7 +90,7 @@ specify_user_and_group_and_url() {
         read -p "Group to use for the backend server: " BOORU_GROUP
     fi
 
-    if [ -z "$BOORU_GROUP" ]; then
+    if [ -z "$SERVER_URL" ]; then
         read -p "Please specify the URL from which you'll reach this server (e. g. http://localhost or http://homebooru.internal): " SERVER_URL
     fi
 }
