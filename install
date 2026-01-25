@@ -139,7 +139,7 @@ download_release() {
     mkdir -p "$TEMP_DIR"
 
     if [[ $RELEASE_SOURCE == "http"* ]]; then
-        wget -o "$TEMP_DIR/$ARCHIVE_NAME" "$RELEASE_SOURCE"
+        wget -O "$TEMP_DIR/$ARCHIVE_NAME" "$RELEASE_SOURCE"
     else
         cp "$RELEASE_SOURCE" "$TEMP_DIR/$ARCHIVE_NAME"
     fi
