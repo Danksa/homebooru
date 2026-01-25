@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+install_dependencies() {
+    apt-get install -y npm nodejs ffmpeg imagemagick git
+}

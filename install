@@ -1,12 +1,64 @@
 #!/usr/bin/env bash
 
-set -e
+#set -e
+
+VERSION="v1.2.0"
+RELEASE_SOURCE="./package/homebooru-$VERSION.tar.gz"
+#RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
 
 BOORU_USER=$BOORU_USER
 BOORU_GROUP=$BOORU_GROUP
-FRONTEND_DIR="/srv/www/homebooru"
-BACKEND_DIR="/opt/homebooru"
-DATA_DIR="/mnt"
+FRONTEND_DIR="${FRONTEND_DIR:-/srv/www/homebooru}"
+BACKEND_DIR="${BACKEND_DIR:-/opt/homebooru}"
+DATA_DIR="${DATA_DIR:-/mnt}"
+SERVER_URL="${SERVER_URL:-http://localhost}"
+BACKEND_PORT=3000
+
+VERSION_DIR="homebooru-$VERSION"
+ARCHIVE_NAME="$VERSION_DIR.tar.gz"
+SERVICE_DIR="./test2/systemd"
+#SERVICE_DIR="/etc/systemd/system"
+NGINX_DIR="./test2/nginx"
+#NGINX_DIR="/etc/nginx"
+TEMP_DIR="/tmp/homebooru-install"
+
+ensure_dependencies() {
+    if ! command -v "wget" &> /dev/null; then
+        echo -e "Missing \033[33;1mwget\033[0m, please install it first"
+        exit 1
+    fi
+
+    if ! command -v "tar" &> /dev/null; then
+        echo -e "Missing \033[33;1mtar\033[0m, please install it first"
+        exit 1
+    fi
+
+
+    if ! command -v "git" &> /dev/null; then
+        echo -e "Missing \033[33;1mgit\033[0m, please install it first"
+        exit 1
+    fi
+
+    if ! command -v "npm" &> /dev/null; then
+        echo -e "Missing \033[33;1mnpm\033[0m, please install it first"
+        exit 1
+    fi
+
+    if ! command -v "node" &> /dev/null; then
+        echo -e "Missing \033[33;1mnodejs\033[0m, please install it first"
+        exit 1
+    fi
+
+    if ! command -v "ffmpeg" &> /dev/null; then
+        echo -e "Missing \033[33;1mffmpeg\033[0m, please install it first"
+        exit 1
+    fi
+
+    if ! command -v "magick" &> /dev/null; then
+        echo -e "Missing \033[33;1mimagemagick\033[0m, please install it first"
+        exit 1
+    fi
+}
 
 specify_user_and_group() {
     while getopts "u:g:" flag &> /dev/null; do
@@ -46,14 +98,118 @@ print_summary() {
     fi
     echo
 
+    echo -e "\033[33;1mServer URL: \033[34m$SERVER_URL (can be changed with the \"-d <URL>\" option)\033[0m"
+
     echo -e "\033[33;1mFrontend Directory: \033[34m$FRONTEND_DIR\033[0m"
     echo -e "\033[33;1mBackend Directory: \033[34m$BACKEND_DIR\033[0m"
     echo -e "\033[33;1mData Directory: \033[34m$DATA_DIR\033[0m"
 }
 
+create_user_and_group() {
+    if ! id "$BOORU_GROUP" &> /dev/null; then
+        echo -e "\033[33;1mCreating group $BOORU_GROUP\033[0m"
+        groupadd "$BOORU_GROUP"
+    fi
+
+    if ! id "$BOORU_USER" &> /dev/null; then
+        echo -e "\033[33;1mCreating user $BOORU_USER\033[0m"
+        useradd -g "$BOORU_GROUP" "$BOORU_USER"
+    fi
+}
+
+download_release() {
+    echo -e "\033[33;1mDownloading release\033[0m"
+    rm -rf "$TEMP_DIR"
+    mkdir -p "$TEMP_DIR"
+
+    if [[ $RELEASE_SOURCE == "http"* ]]; then
+        wget -o "$TEMP_DIR/$ARCHIVE_NAME" "$RELEASE_SOURCE"
+    else
+        cp "$RELEASE_SOURCE" "$TEMP_DIR/$ARCHIVE_NAME"
+    fi
+}
+
+extract_archive() {
+    echo -e "\033[33;1mExtracting archive\033[0m"
+    pushd "$TEMP_DIR" &> /dev/null
+        tar -xzf "$ARCHIVE_NAME"
+    popd &> /dev/null
+}
+
+copy_files() {
+    echo -e "\033[33;1mCreating $FRONTEND_DIR\033[0m"
+    mkdir -p "$FRONTEND_DIR"
+    echo -e "\033[33;1mCopying frontend files\033[0m"
+    cp -r "$TEMP_DIR/$VERSION_DIR/frontend"/* "$FRONTEND_DIR"
+    echo -e "\033[33;1mChanging ownership to $BOORU_USER\033[0m"
+    chown -R "$BOORU_USER:$BOORU_GROUP" "$FRONTEND_DIR"
+
+    echo -e "\033[33;1mCreating $BACKEND_DIR\033[0m"
+    mkdir -p "$BACKEND_DIR"
+    echo -e "\033[33;1mCopying backend files\033[0m"
+    cp -r "$TEMP_DIR/$VERSION_DIR/backend"/* "$BACKEND_DIR"
+    echo -e "\033[33;1mChanging ownership to $BOORU_USER\033[0m"
+    chown -R "$BOORU_USER:$BOORU_GROUP" "$BACKEND_DIR"
+
+    echo -e "\033[33;1mCopying nginx configuration\033[0m"
+    cp "$TEMP_DIR/$VERSION_DIR/homebooru.conf" "$NGINX_DIR/sites-available"
+}
+
+setup_frontend() {
+    echo -e "\033[33;1mSetting backend URL in config.js\033[0m"
+    local replacement="s|^export const backendUrl = .*|export const backendUrl = \"$SERVER_URL:$BACKEND_PORT\";|"
+    sed -i "$replacement" "$FRONTEND_DIR/config.js"
+
+    echo -e "\033[33;1mDisabling default nginx configuration\033[0m"
+    rm -f "$NGINX_DIR/sites-enabled/default"
+
+    echo -e "\033[33;1mSetting-up nginx config\033[0m"
+    export FRONTEND_DIR
+    cat "$TEMP_DIR/$VERSION_DIR/homebooru.conf" | envsubst > "$NGINX_DIR/sites-available/homebooru.conf"
+
+    echo -e "\033[33;1mEnabling nginx configuration\033[0m"
+    ln -s "$NGINX_DIR/sites-available/homebooru.conf" "$NGINX_DIR/sites-enabled/homebooru.conf"
+
+    echo -e "\033[33;1mRestarting nginx\033[0m"
+    systemctl restart nginx
+}
+
+setup_backend() {
+    echo -e "\033[33;1mInstalling dependencies\033[0m"
+    pushd "$BACKEND_DIR" &> /dev/null
+        npm install --omit=dev
+    popd &> /dev/null
+
+    echo -e "\033[33;1mSetting-up service\033[0m"
+    export DATA_DIR BACKEND_DIR BOORU_USER BOORU_GROUP BACKEND_PORT
+    cat "$TEMP_DIR/$VERSION_DIR/homebooru.service" | envsubst > "$SERVICE_DIR/homebooru.service"
+
+    echo -e "\033[33;1mStarting service\033[0m"
+    systemctl enable --now homebooru.service
+}
+
+run_install() {
+    #create_user_and_group
+    download_release
+    extract_archive
+    copy_files
+    setup_frontend
+    setup_backend
+
+    echo -e "\033[33;1mInstallation finished! You should be able to access your homebooru at $SERVER_URL\033[0m"
+}
+
+ensure_dependencies
+
 specify_user_and_group $@
 
 print_summary
+
+echo -n -e "\033[31;1mContinue with the above settings? [y/N] \033[0m"
+read -e choice
+[[ "$choice" == [Yy]* ]] || exit 0
+
+run_install
 
 #backendInstallPath="/opt/homebooru"
 #frontendInstallPath="/srv/www/homebooru"
