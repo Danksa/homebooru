@@ -26,10 +26,12 @@ detect_user_and_group() {
 
     if [ -z "$BOORU_USER" ]; then
         echo -e "\033[31;1mCould not determine user from backend path $BACKEND_DIR\033[0m"
+        exit 1
     fi
 
     if [ -z "$BOORU_GROUP" ]; then
         echo -e "\033[31;1mCould not determine group from backend path $BACKEND_DIR\033[0m"
+        exit 1
     fi
 }
 
@@ -143,6 +145,16 @@ run_update() {
 }
 
 detect_user_and_group
+
+if [ ! -d "$FRONTEND_DIR" ]; then
+    echo -e "\033[31;1mThe frontend directory \"$FRONTEND_DIR\" does not exist. Please specify the correct directory using the environment variable \"FRONTEND_DIR\"\033[0m"
+    exit 1
+fi
+
+if [ ! -d "$BACKEND_DIR" ]; then
+    echo -e "\033[31;1mThe frontend directory \"$BACKEND_DIR\" does not exist. Please specify the correct directory using the environment variable \"BACKEND_DIR\"\033[0m"
+    exit 1
+fi
 
 print_summary
 
