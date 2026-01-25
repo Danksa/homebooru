@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # The version to update to
-VERSION="v1.2.0"
+VERSION="v1.2.2"
 
 # URL to the zipped release
 RELEASE_SOURCE="https://github.com/Danksa/homebooru/releases/download/$VERSION/$ARCHIVE_NAME"
