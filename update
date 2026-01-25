@@ -24,8 +24,8 @@ ARCHIVE_NAME="$VERSION_DIR.tar.gz"
 TEMP_DIR="/tmp/homebooru-install"
 
 detect_user_and_group() {
-    BOORU_USER=$(stat "%U" "$BACKEND_DIR")
-    BOORU_GROUP=$(stat "%G" "$BACKEND_DIR")
+    BOORU_USER=$(stat -c "%U" "$BACKEND_DIR")
+    BOORU_GROUP=$(stat -c "%G" "$BACKEND_DIR")
 
     if [ -z "$BOORU_USER" ]; then
         echo -e "\033[31;1mCould not determine user from backend path $BACKEND_DIR\033[0m"
@@ -136,17 +136,16 @@ clear_temp() {
 }
 
 run_update() {
-    create_user_and_group
     download_release
     extract_archive
     update_frontend
     update_backend
     clear_temp
 
-    echo -e "\033[33;1mInstallation finished! You should be able to access your homebooru at $SERVER_URL\033[0m"
+    echo -e "\033[33;1mUpdate finished! You should be able to access your homebooru again\033[0m"
 }
 
-detect_user_and_group $@
+detect_user_and_group
 
 print_summary
 
