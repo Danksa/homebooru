@@ -16,10 +16,8 @@ BACKEND_PORT=3000
 
 VERSION_DIR="homebooru-$VERSION"
 ARCHIVE_NAME="$VERSION_DIR.tar.gz"
-SERVICE_DIR="./test2/systemd"
-#SERVICE_DIR="/etc/systemd/system"
-NGINX_DIR="./test2/nginx"
-#NGINX_DIR="/etc/nginx"
+SERVICE_DIR="/etc/systemd/system"
+NGINX_DIR="/etc/nginx"
 TEMP_DIR="/tmp/homebooru-install"
 
 ensure_dependencies() {
@@ -60,14 +58,17 @@ ensure_dependencies() {
     fi
 }
 
-specify_user_and_group() {
-    while getopts "u:g:" flag &> /dev/null; do
+specify_user_and_group_and_url() {
+    while getopts "u:g:d:" flag &> /dev/null; do
         case $flag in
             u)
                 BOORU_USER=$OPTARG
                 ;;
             g)
                 BOORU_GROUP=$OPTARG
+                ;;
+            d)
+                SERVER_URL=$OPTARG
                 ;;
         esac
     done
@@ -160,12 +161,15 @@ setup_frontend() {
     local replacement="s|^export const backendUrl = .*|export const backendUrl = \"$SERVER_URL:$BACKEND_PORT\";|"
     sed -i "$replacement" "$FRONTEND_DIR/config.js"
 
+    echo -e "\033[33;1mCreating data symlink\033[0m"
+    ln -s "$DATA_DIR" "$FRONTEND_DIR/data"
+
     echo -e "\033[33;1mDisabling default nginx configuration\033[0m"
     rm -f "$NGINX_DIR/sites-enabled/default"
 
     echo -e "\033[33;1mSetting-up nginx config\033[0m"
     export FRONTEND_DIR
-    cat "$TEMP_DIR/$VERSION_DIR/homebooru.conf" | envsubst > "$NGINX_DIR/sites-available/homebooru.conf"
+    cat "$TEMP_DIR/$VERSION_DIR/homebooru.conf" | envsubst '$FRONTEND_DIR' > "$NGINX_DIR/sites-available/homebooru.conf"
 
     echo -e "\033[33;1mEnabling nginx configuration\033[0m"
     ln -s "$NGINX_DIR/sites-available/homebooru.conf" "$NGINX_DIR/sites-enabled/homebooru.conf"
@@ -180,28 +184,36 @@ setup_backend() {
         npm install --omit=dev
     popd &> /dev/null
 
+    echo -e "\033[33;1mSetting $DATA_DIR ownership\033[0m"
+    chown -R "$BOORU_USER:$BOORU_GROUP" "$DATA_DIR"
+
     echo -e "\033[33;1mSetting-up service\033[0m"
     export DATA_DIR BACKEND_DIR BOORU_USER BOORU_GROUP BACKEND_PORT
-    cat "$TEMP_DIR/$VERSION_DIR/homebooru.service" | envsubst > "$SERVICE_DIR/homebooru.service"
+    cat "$TEMP_DIR/$VERSION_DIR/homebooru.service" | envsubst '$DATA_DIR' '$BACKEND_DIR' '$BOORU_USER' '$BOORU_GROUP' '$BACKEND_PORT' > "$SERVICE_DIR/homebooru.service"
 
     echo -e "\033[33;1mStarting service\033[0m"
     systemctl enable --now homebooru.service
 }
 
+clear_temp() {
+    rm -rf "$TEMP_DIR"
+}
+
 run_install() {
-    #create_user_and_group
+    create_user_and_group
     download_release
     extract_archive
     copy_files
     setup_frontend
     setup_backend
+    clear_temp
 
     echo -e "\033[33;1mInstallation finished! You should be able to access your homebooru at $SERVER_URL\033[0m"
 }
 
 ensure_dependencies
 
-specify_user_and_group $@
+specify_user_and_group_and_url $@
 
 print_summary
 
@@ -210,46 +222,3 @@ read -e choice
 [[ "$choice" == [Yy]* ]] || exit 0
 
 run_install
-
-#backendInstallPath="/opt/homebooru"
-#frontendInstallPath="/srv/www/homebooru"
-#dataPath="/mnt" # Where the posts, tags etc. are stored
-
-#echo "Please enter the URL your server will use (e.g. http://localhost or http://homebooru.mylocaldomain.internal):"
-#read serverUrl
-
-#if [[ -z "$serverUrl" ]]; then
-#    echo "Invalid server URL, exiting"
-#fi
-
-#echo Building backend
-
-#pushd backend &>/dev/null
-#npm install
-#npm run build
-#popd &>/dev/null
-
-#echo Installing backend
-#sudo mkdir -p "$backendInstallPath"
-#sudo cp -r backend/build/* "$backendInstallPath"
-
-#echo Adding service
-#sudo cp homebooru.service /etc/systemd/system
-
-#sudo sed -i 's|^Environment=|Environment="DATA_DIRECTORY='"$dataPath"'"|' '/etc/systemd/system/homebooru.service'
-
-#echo Enabling and starting service
-#sudo systemctl enable --now homebooru.service
-
-#echo Installing frontend
-#sudo mkdir -p "$frontendInstallPath"
-#sudo cp -r frontend/* "$frontendInstallPath"
-#sudo ln -s "$dataPath" "$frontendInstallPath/data"
-#sudo sed -i 's|^export const backendUrl = .*|export const backendUrl = "'"$serverUrl"':3000"|' "$backendInstallPath/config.js"
-
-#echo Setting up nginx
-#sudo cp homebooru.conf /etc/nginx/sites-available
-#sudo ln -s /etc/nginx/sites-available/homebooru.conf /etc/nginx/sites-enabled/homebooru.conf
-
-#echo Restarting nginx
-#sudo systemctl restart nginx
