@@ -38,6 +38,24 @@ You can also clone this repo/download just the `install` script and modify it to
 > The system is required to have `npm`, `nodejs`, `nginx`, `wget`, `tar`, `ffmpeg` and `imagemagick` installed already
 > I've tested this with `ffmpeg` version 7.1.1 and `imagemagick` version 7.1.1, older versions probably work as well.
 
+## Updating
+The `update` script will update your homebooru by:
+- detecting the user and group to use from the owner of the backend directory (`/opt/homebooru` by default)
+- downloading the latest GitHub release
+- updating the backend and frontend files
+- transferring the settings of your old frontend `config.js` to the new one. (a copy of your old config will be created as `config.js.bak`, if anything goes wrong)
+- restarting the backend
+
+To update your homebooru you can use the `update` script pretty much like you use the `install` script:
+``` sh
+wget -q -O - https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/update | bash
+```
+
+if you use non-default directories for your frontend or backend, supply them as environment variables:
+``` sh
+wget -q -O - https://raw.githubusercontent.com/Danksa/homebooru/refs/heads/main/update | FRONTEND_DIR="/srv/somewhere" BACKEND_DIR="/usr/local/somewhere" bash
+```
+
 ## Features
 - Uploading images and videos (now with progress bars!)
 - Importing images and videos from a local server directory
