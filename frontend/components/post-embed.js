@@ -37,6 +37,12 @@ class PostEmbed extends CustomElement {
         if(tagList != null) {
             this.displayTags(postId, tagList);
         }
+
+        const test = async () => {
+            const response = await backend.get(`/posts/${postId.toFixed(0)}/adjacent${window.location.search}`);
+            console.log("adjacent", response);
+        };
+        test();
     }
 
     async displayPost(id) {

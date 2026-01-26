@@ -22,8 +22,6 @@ export const listPosts: RequestHandler = async (req, res) => {
     try {
         const { start, count, query } = QueryParser.Parse(req.query);
 
-        console.log("QUERY", query);
-
         const sanitizedQuery = query?.trim();
         const tagNames = sanitizedQuery == null || sanitizedQuery.length === 0 ? null : sanitizedQuery.split(" ");
         const tags = tagNames != null
