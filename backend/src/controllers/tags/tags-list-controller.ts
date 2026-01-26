@@ -8,7 +8,7 @@ import { Category } from "../../data/category.js";
 import { postTagsStorage } from "../../processing/post-tags-storage.js";
 
 const Query = Type.Object({
-    from: Type.Integer({ minimum: 0 }),
+    start: Type.Integer({ minimum: 0 }),
     count: Type.Integer({ minimum: 1 }),
     query: Type.Optional(Type.String())
 });
@@ -17,10 +17,10 @@ const QueryParser = Compile(Query);
 
 export const listTags: RequestHandler = async (req, res) => {
     try {
-        const { from, count } = QueryParser.Parse(req.query);
+        const { start, count } = QueryParser.Parse(req.query);
 
         const totalCount = await tagStorage.count();
-        const tags = await tagStorage.page(from, count);
+        const tags = await tagStorage.page(start, count);
 
         const augmentedTags = await Promise.all(tags.map(async tag => {
             const data = await tag.data();

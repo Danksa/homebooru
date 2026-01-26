@@ -11,7 +11,7 @@ import { Category } from "../../data/category.js";
 import { config } from "../../config.js";
 
 const Query = Type.Object({
-    from: Type.Integer({ minimum: 0 }),
+    start: Type.Integer({ minimum: 0 }),
     count: Type.Integer({ minimum: 1 }),
     query: Type.Optional(Type.String())
 });
@@ -20,7 +20,9 @@ const QueryParser = Compile(Query);
 
 export const listPosts: RequestHandler = async (req, res) => {
     try {
-        const { from, count, query } = QueryParser.Parse(req.query);
+        const { start, count, query } = QueryParser.Parse(req.query);
+
+        console.log("QUERY", query);
 
         const sanitizedQuery = query?.trim();
         const tagNames = sanitizedQuery == null || sanitizedQuery.length === 0 ? null : sanitizedQuery.split(" ");
@@ -35,7 +37,7 @@ export const listPosts: RequestHandler = async (req, res) => {
             : [];
 
         const totalCount = await postStorage.count(tags);
-        const posts = await postStorage.query(from, count, tags);
+        const posts = await postStorage.query(start, count, tags);
         const tagIds = await Promise.all(posts.map(post => postTagsStorage.tagIds(post.id)));
         const uniqueTagIds = union(tagIds);
         const tagFrequencies = new Map<number, number>();

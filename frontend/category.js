@@ -1,10 +1,9 @@
 import { backend } from "./util/backend.js";
+import { navigate, urlId } from "./util/search-params.js";
 
-const urlParams = new URLSearchParams(window.location.search);
-const rawId = urlParams.get("id");
-const id = rawId != null ? Number(rawId) : null;
+const id = urlId();
 if(id == null)
-    window.location.href = "/404.html";
+    navigate("/404.html");
 
 const idTitle = document.getElementById("id");
 idTitle.textContent = id.toFixed(0);
@@ -41,5 +40,5 @@ deleteButton.addEventListener("click", async () => {
 
     await backend.delete(`/categories/${id.toFixed(0)}`);
 
-    window.location = "/tags.html";
+    navigate("/tags.html");
 });
