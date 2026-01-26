@@ -1,6 +1,7 @@
 import { thumbnailBasePath } from "../config.js";
 import { postSelection } from "../state/post-selection.js";
 import { componentStyle } from "../util/attach-style.js";
+import { link, ParamNames } from "../util/search-params.js";
 import { create } from "../util/template.js";
 
 class PostsGridPost extends HTMLElement {
@@ -34,7 +35,7 @@ class PostsGridPost extends HTMLElement {
         this.thumbnail.src = `${thumbnailBasePath}/${thumbnailUrl}`;
         this.thumbnail.alt = `Thumbnail for post ${id}`;
 
-        this.link.href = `/post.html?id=${id}`;
+        this.link.href = link("/post.html", { [ParamNames.id]: id }, true);
 
         const numberId = Number(id);
         const selected = postSelection.includes(numberId);

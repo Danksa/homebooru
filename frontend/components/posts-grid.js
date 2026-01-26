@@ -1,6 +1,7 @@
 import { postsPerPage } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { backend } from "../util/backend.js";
+import { ParamNames, urlQuery, urlStart } from "../util/search-params.js";
 import { create } from "../util/template.js";
 import "./posts-grid-post.js";
 
@@ -34,12 +35,11 @@ class PostsGrid extends HTMLElement {
     }
 
     async fetchPosts() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const start = Number(urlParams.get("start") ?? "0");
-        const query = urlParams.get("query");
+        const start = urlStart();
+        const query = urlQuery();
 
-        const queryString = query != null ? `&query=${query}` : "";
-        const body = await backend.get(`/posts?from=${start}&count=${postsPerPage.toFixed(0)}${queryString}`);
+        const queryString = query != null ? `&${ParamNames.query}=${query}` : "";
+        const body = await backend.get(`/posts?${ParamNames.start}=${start}&${ParamNames.count}=${postsPerPage.toFixed(0)}${queryString}`);
         this.populate(body.posts);
 
         this.pagination = {

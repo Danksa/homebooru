@@ -1,10 +1,9 @@
 import { backend } from "./util/backend.js";
+import { navigate, urlId } from "./util/search-params.js";
 
-const urlParams = new URLSearchParams(window.location.search);
-const rawTagId = urlParams.get("id");
-const tagId = rawTagId != null ? Number(rawTagId) : null;
+const tagId = urlId();
 if(tagId == null)
-    window.location.href = "/404.html";
+    navigate("/404.html");
 
 const idTitle = document.getElementById("id");
 idTitle.textContent = `ID ${tagId}`;
@@ -15,7 +14,7 @@ deleteButton.addEventListener("click", async () => {
 
     await backend.delete(`/tags/${tagId}`);
 
-    window.location = "/tags.html";
+    navigate("/tags.html");
 });
 
 const categoryInput = document.getElementById("category");

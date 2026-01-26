@@ -1,4 +1,5 @@
 import { backend } from "./util/backend.js";
+import { navigate } from "./util/search-params.js";
 
 const categoryInput = document.getElementById("category");
 const fetchCategories = async () => {
@@ -30,7 +31,7 @@ form.addEventListener("submit", async event => {
             name: data.get("name"),
             category: category === "" ? null : parseInt(category)
         });
-        window.location = "/tags.html";
+        navigate("/tags.html");
     } catch(error) {
         console.log(error);
     }

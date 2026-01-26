@@ -1,4 +1,5 @@
 import { backend } from "./util/backend.js";
+import { navigate } from "./util/search-params.js";
 
 const form = document.getElementById("form");
 form.addEventListener("submit", async event => {
@@ -11,7 +12,7 @@ form.addEventListener("submit", async event => {
             name: data.get("name"),
             color: data.get("color")
         });
-        window.location = "/tags.html";
+        navigate("/tags.html");
     } catch(error) {
         console.log(error);
     }

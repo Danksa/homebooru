@@ -1,5 +1,6 @@
 import { maxPageQuicklinks } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { link, ParamNames } from "../util/search-params.js";
 
 class TagsNav extends HTMLElement {
     constructor() {
@@ -48,9 +49,7 @@ class TagsNav extends HTMLElement {
     }
 
     pageUrl(start) {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set("start", start);
-        return `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+        return link(`${window.location.origin}${window.location.pathname}`, { [ParamNames.start]: start }, true);
     }
 }
 

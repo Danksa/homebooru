@@ -1,6 +1,7 @@
 import { tagSuggestionDebounceMillis } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
 import { debounced } from "../util/debounce.js";
+import { navigate, ParamNames, urlQuery } from "../util/search-params.js";
 import { fetchSuggestions } from "../util/suggestions.js";
 import { create } from "../util/template.js";
 import { CustomElement } from "./custom-element.js";
@@ -10,8 +11,7 @@ class SearchInput extends CustomElement {
     constructor() {
         super();
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const query = urlParams.get("query") ?? "";
+        const query = urlQuery() ?? "";
         this.query = query;
 
         const shadow = this.attachShadow({ mode: "closed" });
@@ -85,7 +85,7 @@ class SearchInput extends CustomElement {
 
     search(text) {
         const target = this.getAttribute("target");
-        window.location = `${target != null ? target : ""}?query=${text}`;
+        navigate(target != null ? target : "", { [ParamNames.query]: text });
     }
 
     async requestSuggestions(text) {
