@@ -3,7 +3,7 @@ import { link, navigate, ParamNames } from "./util/search-params.js";
 
 const close = document.getElementById("close");
 close.addEventListener("click", () => {
-    navigate("/posts", {}, true);
+    navigate("/posts.html", {}, true);
 });
 
 const fullscreen = document.getElementById("fullscreen");
