@@ -26,7 +26,15 @@
                     grid-area: grid;
                     justify-content: flex-start;
 
-                    margin-bottom: 4em;
+                    &::after {
+                        display: block;
+
+                        content: "";
+
+                        width: 100%;
+                        min-height: 48px;
+                        height: 48px;
+                    }
                 }
 
                 > aside {
@@ -38,21 +46,45 @@
 
                     background-color: var(--background);
 
+                    overflow: hidden auto;
+
                     &.shown {
                         display: initial;
+                    }
+
+                    &::after {
+                        display: block;
+
+                        content: "";
+
+                        width: 100%;
+                        min-height: calc(48px + 1em);
+                        height: calc(48px + 1em);
                     }
                 }
             }
 
-            #masstag-toggle {
+            button.start-slideshow {
+                width: 100%;
+            }
+
+            button#menu-toggle {
                 position: fixed;
-                bottom: 1em;
-                left: 1em;
+                bottom: 1rem;
+                left: 1rem;
+
+                font-size: 60px;
+                padding: 0;
+                
+                width: 48px;
+                aspect-ratio: 1;
 
                 color: transparent;
                 text-shadow: 0 0 0 var(--background);
 
                 box-shadow: 2px 2px 4px black;
+
+                overflow: hidden;
             }
 
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
@@ -71,7 +103,9 @@
                     > main {
                         grid-area: grid;
 
-                        margin-bottom: initial;
+                        &::after {
+                            display: none;
+                        }
                     }
 
                     > aside {
@@ -82,7 +116,7 @@
                     }
                 }
 
-                #masstag-toggle {
+                button#menu-toggle {
                     display: none;
                 }
 
@@ -142,14 +176,16 @@
             <posts-grid id="posts">Loading...</posts-grid>
             <posts-nav style="width: 100%" grid="posts"></posts-nav>
         </main>
-        <aside id="masstag-menu">
+        <aside id="sidemenu">
+            <button class="start-slideshow" type="button">📽️ Start Slideshow</button>
+
             <h1>Tags</h1>
             <tag-list id="tags" show-count></tag-list>
 
             <h1>Mass Tag</h1>
             <mass-tag-menu></mass-tag-menu>
         </aside>
-        <button id="masstag-toggle" type="button">🏷️</button>
+        <button id="menu-toggle" type="button">☰</button>
 
         <script type="module" src="components/main-nav.js" async></script>
         <script type="module" src="components/search-input.js" async></script>

@@ -1,12 +1,12 @@
 import { backend } from "./util/backend.js";
+import { link, navigate, urlId } from "./util/search-params.js";
 
-const urlParams = new URLSearchParams(window.location.search);
-const postId = Number(urlParams.get("id") ?? undefined);
-if(!Number.isInteger(postId))
-    throw new Error("Post ID not specified");
+const postId = urlId();
+if(postId == null)
+    navigate("/404.html");
 
 const editLink = document.getElementById("edit-link");
-editLink.href = `/post.html${window.location.search}`;
+editLink.href = link("/post.html", {}, true);
 
 const addTagInput = document.getElementById("add-tag");
 addTagInput.addEventListener("submit", async (event) => {
@@ -35,7 +35,7 @@ const deleteButton = document.getElementById("delete-button");
 deleteButton.addEventListener("click", async () => {
     try {
         await backend.delete(`/posts/${postId}`);
-        window.location = "/posts.html";
+        navigate("/posts.html");
     } catch (error) {
         console.log(error);
     }

@@ -65,12 +65,13 @@ FRONTEND_DIR="/srv/somewhere" BACKEND_DIR="/usr/local/somewhere" ./update
 - Display posts (obviously!)
 - Mass-tagging posts
 - Tag categories
+- Slideshows
+- Navigating to next/previous post
 
 ### Planned
 - Tag aliases
 - Tag merging
 - Tag implications
-- Slideshows
 
 ### Currently not Planned
 - Duplicate detection
@@ -92,6 +93,11 @@ Afterwards you can simply run `npm run start` to start the backend.
 For the frontend you'll need some webserver, like [http-server](https://www.npmjs.com/package/http-server).
 
 Then open http://localhost/ and you should be good to go!
+
+### Updating the version
+You can run the `version` script with the parameter `major`, `minor` or `patch` to update the version. This will automatically update the `VERSION` variable in the `install` and `update` script.
+
+For example: `./version minor`
 
 ### Creating a Release Archive
 To build an archive to later install using the install script simply run the `build` command. It will extract the version from the backend `package.json` and create an archive named `homebooru-v<VERSION>.tar.gz` inside the `package` folder.

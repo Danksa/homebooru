@@ -5,9 +5,10 @@ import { ParseError } from "typebox/value";
 import Type from "typebox";
 import Compile from "typebox/compile";
 import { Tag } from "../../data/tag.js";
+import { PostId } from "./posts.schema.js";
 
 const Query = Type.Object({
-    id: Type.Integer({ minimum: 0 })
+    id: PostId
 });
 
 const QueryParser = Compile(Query);

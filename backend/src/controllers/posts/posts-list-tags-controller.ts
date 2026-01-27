@@ -6,9 +6,10 @@ import Type from "typebox";
 import Compile from "typebox/compile";
 import { categoryStorage } from "../../processing/category-storage.js";
 import { Category } from "../../data/category.js";
+import { PostId } from "./posts.schema.js";
 
 const Query = Type.Object({
-    id: Type.Integer({ minimum: 0 })
+    id: PostId
 });
 
 const QueryParser = Compile(Query);

@@ -30,7 +30,8 @@ export class Tag extends Item((data) => TagSchemaCompile.Parse(data), config.tag
     static sanitizedName(name: string): string {
         let sanitized = name.trim();
         sanitized = sanitized.replaceAll(/\s/g, "_");
-        sanitized = sanitized.replaceAll(/[^\w:]/g, "");
+        sanitized = sanitized.replaceAll(/[^\w:./-]/g, "");
+        sanitized = sanitized.startsWith("-") ? sanitized.slice(1) : sanitized;
         return sanitized;
     }
 }

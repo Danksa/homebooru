@@ -1,4 +1,5 @@
 import { massTag } from "./state/mass-tag.js";
+import { navigate } from "./util/search-params.js";
 
 const posts = document.getElementById("posts");
 
@@ -10,11 +11,19 @@ massTag.addEventListener("toggle", (event) => {
 posts.toggleAttribute("show-selection", massTag.active());
 
 
-const masstagMenu = document.getElementById("masstag-menu");
-const masstagToggle = document.getElementById("masstag-toggle");
-masstagToggle.addEventListener("click", () => masstagMenu.classList.toggle("shown"));
+const sidemenu = document.getElementById("sidemenu");
+const menuToggle = document.getElementById("menu-toggle");
+menuToggle.addEventListener("click", () => sidemenu.classList.toggle("shown"));
 
 const tagList = document.getElementById("tags");
 posts.addEventListener("tags", (event) => {
     tagList.tags = event.detail;
 });
+
+
+const startSlideshowButtons = document.querySelectorAll(".start-slideshow");
+for(const button of startSlideshowButtons) {
+    button.addEventListener("click", () => {
+        navigate("/slideshow", {}, true);
+    });
+}

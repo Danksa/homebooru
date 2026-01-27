@@ -1,5 +1,6 @@
 import { maxPageQuicklinks, showFirstPage, showLastPage } from "../config.js";
 import { componentStyle } from "../util/attach-style.js";
+import { link, ParamNames } from "../util/search-params.js";
 import { create } from "../util/template.js";
 import { CustomElement } from "./custom-element.js";
 
@@ -55,9 +56,7 @@ class PostsNav extends CustomElement {
     }
 
     pageUrl(start) {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set("start", start);
-        return `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+        return link(`${window.location.origin}${window.location.pathname}`, { [ParamNames.start]: start }, true);
     }
 }
 

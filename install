@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # The version to install
-VERSION="v1.2.2"
+VERSION="v1.3.0"
 
 # Some intermediary variables
 VERSION_DIR="homebooru-$VERSION"

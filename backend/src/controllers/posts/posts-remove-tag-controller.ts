@@ -3,10 +3,12 @@ import Type from "typebox";
 import Compile from "typebox/compile";
 import { ParseError } from "typebox/value";
 import { postTagsStorage } from "../../processing/post-tags-storage.js";
+import { PostId } from "./posts.schema.js";
+import { TagId } from "../tags/tags.schema.js";
 
 const Query = Type.Object({
-    id: Type.Integer({ minimum: 0 }),
-    tagId: Type.Integer({ minimum: 0 })
+    id: PostId,
+    tagId: TagId
 });
 
 const QueryParser = Compile(Query);

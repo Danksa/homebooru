@@ -1,7 +1,9 @@
 .container {
     display: flex;
-    justify-content: center;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
     align-items: center;
+    gap: 1em;
 
     width: 100%;
     height: 100%;
@@ -19,7 +21,7 @@
         height: 100%;
     }
 
-    &.full:has(img) {
+    &.full {
         position: absolute;
 
         width: 100dvw;
@@ -29,5 +31,25 @@
         inset: 0;
 
         z-index: 999;
+    }
+
+    nav {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1em;
+
+        > button {
+            flex-grow: 1;
+
+            font-weight: bold;
+        }
+    }
+
+    &.full {
+        nav {
+            visibility: hidden;
+        }
     }
 }
