@@ -8,19 +8,27 @@
         <link rel="stylesheet" href="base.css" />
 
         <style>
-            button {
+            nav 
+            {
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: stretch;
+                gap: 1em;
+
                 position: absolute;
                 left: 1rem;
                 bottom: 1rem;
 
-                color: transparent;
-                text-shadow: 0 0 0 var(--background);
-
-                box-shadow: 2px 2px 4px black;
-
                 opacity: 50%;
 
                 z-index: 1000;
+
+                > button {
+                    color: transparent;
+                    text-shadow: 0 0 0 var(--background);
+
+                    box-shadow: 2px 2px 4px black;
+                }
             }
         </style>
     </head>
@@ -28,7 +36,10 @@
         <main>
             <post-embed id="embed" autoplay>Loading...</post-embed>
         </main>
-        <button id="close" type="button">❌</button>
+        <nav>
+            <button id="fullscreen" type="button">🖥️</button>
+            <button id="close" type="button">❌</button>
+        </nav>
 
         <script type="module" src="components/post-embed.js" async></script>
 

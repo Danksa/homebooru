@@ -6,6 +6,15 @@ close.addEventListener("click", () => {
     navigate("/posts", {}, true);
 });
 
+const fullscreen = document.getElementById("fullscreen");
+fullscreen.addEventListener("click", () => {
+    if(document.fullscreenElement != null) {
+        void document.exitFullscreen();
+    } else {
+        embed.requestFullscreen();
+    }
+});
+
 const embed = document.getElementById("embed");
 
 const countPerPage = 10;
