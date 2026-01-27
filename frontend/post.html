@@ -8,6 +8,25 @@
         <link rel="stylesheet" href="base.css" />
 
         <style>
+            html {
+                overflow: hidden auto;
+            }
+
+            body {
+                height: unset;
+
+                > header {
+                    position: sticky;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                }
+
+                > main {
+                    overflow: hidden;
+                }
+            }
+
             aside {
                 display: flex;
                 flex-flow: column nowrap;
