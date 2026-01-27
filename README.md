@@ -66,6 +66,7 @@ FRONTEND_DIR="/srv/somewhere" BACKEND_DIR="/usr/local/somewhere" ./update
 - Mass-tagging posts
 - Tag categories
 - Slideshows
+- Navigating to next/previous post
 
 ### Planned
 - Tag aliases
