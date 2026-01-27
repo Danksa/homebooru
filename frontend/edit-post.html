@@ -32,6 +32,10 @@
                 flex-flow: column nowrap;
                 gap: 1em;
             }
+
+            hr {
+                width: 100%;
+            }
             
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
                 body {
@@ -83,8 +87,10 @@
             </header>
             <tag-list id="tags" show-remove></tag-list>
             <add-tag-input id="add-tag"></add-tag-input>
-            <button id="delete-button" class="negative">Delete post</button>
             <a id="edit-link" class="button full">Done</a>
+
+            <hr />
+            <button id="delete-button" class="negative">Delete post</button>
         </aside>
 
         <script type="module" src="components/main-nav.js" async></script>
