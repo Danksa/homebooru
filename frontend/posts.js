@@ -21,7 +21,9 @@ posts.addEventListener("tags", (event) => {
 });
 
 
-const startSlideshow = document.getElementById("start-slideshow");
-startSlideshow.addEventListener("click", () => {
-    navigate("/slideshow", {}, true);
-});
+const startSlideshowButtons = document.querySelectorAll(".start-slideshow");
+for(const button of startSlideshowButtons) {
+    button.addEventListener("click", () => {
+        navigate("/slideshow", {}, true);
+    });
+}

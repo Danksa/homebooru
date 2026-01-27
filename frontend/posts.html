@@ -44,6 +44,16 @@
                 }
             }
 
+            #slideshow-menu {
+                display: none;
+
+                width: 100%;
+
+                > button.start-slideshow {
+                    width: 100%;
+                }
+            }
+
             #mobile-menu {
                 display: flex;
                 flex-flow: column nowrap;
@@ -91,6 +101,10 @@
 
                 #mobile-menu {
                     display: none;
+                }
+
+                #slideshow-menu {
+                    display: initial;
                 }
 
                 header > search {
@@ -155,9 +169,14 @@
 
             <h1>Mass Tag</h1>
             <mass-tag-menu></mass-tag-menu>
+
+            <div id="slideshow-menu">
+                <h1>Slide Show</h1>
+                <button class="start-slideshow" type="button">📽️ Start Slideshow</button>
+            </div>
         </aside>
         <nav id="mobile-menu">
-            <button id="start-slideshow" type="button">📽️</button>
+            <button class="start-slideshow" type="button">📽️</button>
             <button id="masstag-toggle" type="button">🏷️</button>
         </nav>
 
