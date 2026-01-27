@@ -18,3 +18,9 @@ const tagList = document.getElementById("tags");
 posts.addEventListener("tags", (event) => {
     tagList.tags = event.detail;
 });
+
+
+const startSlideshow = document.getElementById("start-slideshow");
+startSlideshow.addEventListener("click", () => {
+    navigate("/slideshow", {}, true);
+}, { once: true });
