@@ -44,32 +44,27 @@
                 }
             }
 
-            #slideshow-menu {
-                display: none;
-
+            button.start-slideshow {
                 width: 100%;
-
-                > button.start-slideshow {
-                    width: 100%;
-                }
             }
 
-            #mobile-menu {
-                display: flex;
-                flex-flow: column nowrap;
-                align-items: stretch;
-                gap: 1em;
-
+            button#menu-toggle {
                 position: fixed;
                 bottom: 1rem;
                 left: 1rem;
 
-                > button {
-                    color: transparent;
-                    text-shadow: 0 0 0 var(--background);
+                font-size: 60px;
+                padding: 0;
+                
+                width: 48px;
+                aspect-ratio: 1;
 
-                    box-shadow: 2px 2px 4px black;
-                }
+                color: transparent;
+                text-shadow: 0 0 0 var(--background);
+
+                box-shadow: 2px 2px 4px black;
+
+                overflow: hidden;
             }
 
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
@@ -99,12 +94,8 @@
                     }
                 }
 
-                #mobile-menu {
+                button#menu-toggle {
                     display: none;
-                }
-
-                #slideshow-menu {
-                    display: initial;
                 }
 
                 header > search {
@@ -163,22 +154,16 @@
             <posts-grid id="posts">Loading...</posts-grid>
             <posts-nav style="width: 100%" grid="posts"></posts-nav>
         </main>
-        <aside id="masstag-menu">
+        <aside id="sidemenu">
+            <button class="start-slideshow" type="button">📽️ Start Slideshow</button>
+
             <h1>Tags</h1>
             <tag-list id="tags" show-count></tag-list>
 
             <h1>Mass Tag</h1>
             <mass-tag-menu></mass-tag-menu>
-
-            <div id="slideshow-menu">
-                <h1>Slide Show</h1>
-                <button class="start-slideshow" type="button">📽️ Start Slideshow</button>
-            </div>
         </aside>
-        <nav id="mobile-menu">
-            <button class="start-slideshow" type="button">📽️</button>
-            <button id="masstag-toggle" type="button">🏷️</button>
-        </nav>
+        <button id="menu-toggle" type="button">☰</button>
 
         <script type="module" src="components/main-nav.js" async></script>
         <script type="module" src="components/search-input.js" async></script>

@@ -11,9 +11,9 @@ massTag.addEventListener("toggle", (event) => {
 posts.toggleAttribute("show-selection", massTag.active());
 
 
-const masstagMenu = document.getElementById("masstag-menu");
-const masstagToggle = document.getElementById("masstag-toggle");
-masstagToggle.addEventListener("click", () => masstagMenu.classList.toggle("shown"));
+const sidemenu = document.getElementById("sidemenu");
+const menuToggle = document.getElementById("menu-toggle");
+menuToggle.addEventListener("click", () => sidemenu.classList.toggle("shown"));
 
 const tagList = document.getElementById("tags");
 posts.addEventListener("tags", (event) => {
