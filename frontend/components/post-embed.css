@@ -21,7 +21,7 @@
         height: 100%;
     }
 
-    &.full:has(img) {
+    &.full {
         position: absolute;
 
         width: 100dvw;

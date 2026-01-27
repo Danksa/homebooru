@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Slideshow - Homebooru</title>
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href="base.css" />
+
+        <style>
+            button {
+                position: absolute;
+                left: 1rem;
+                bottom: 1rem;
+
+                color: transparent;
+                text-shadow: 0 0 0 var(--background);
+
+                box-shadow: 2px 2px 4px black;
+
+                opacity: 50%;
+
+                z-index: 1000;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <post-embed id="embed" autoplay>Loading...</post-embed>
+        </main>
+        <button id="close" type="button">❌</button>
+
+        <script type="module" src="components/post-embed.js" async></script>
+
+        <script type="module" src="slideshow.js" async></script>
+    </body>
+</html>
