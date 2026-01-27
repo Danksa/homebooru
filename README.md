@@ -65,12 +65,12 @@ FRONTEND_DIR="/srv/somewhere" BACKEND_DIR="/usr/local/somewhere" ./update
 - Display posts (obviously!)
 - Mass-tagging posts
 - Tag categories
+- Slideshows
 
 ### Planned
 - Tag aliases
 - Tag merging
 - Tag implications
-- Slideshows
 
 ### Currently not Planned
 - Duplicate detection
