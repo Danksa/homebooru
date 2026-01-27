@@ -26,7 +26,15 @@
                     grid-area: grid;
                     justify-content: flex-start;
 
-                    margin-bottom: 8em;
+                    &::after {
+                        display: block;
+
+                        content: "";
+
+                        width: 100%;
+                        min-height: 48px;
+                        height: 48px;
+                    }
                 }
 
                 > aside {
@@ -38,8 +46,20 @@
 
                     background-color: var(--background);
 
+                    overflow: hidden auto;
+
                     &.shown {
                         display: initial;
+                    }
+
+                    &::after {
+                        display: block;
+
+                        content: "";
+
+                        width: 100%;
+                        min-height: calc(48px + 1em);
+                        height: calc(48px + 1em);
                     }
                 }
             }
@@ -83,7 +103,9 @@
                     > main {
                         grid-area: grid;
 
-                        margin-bottom: initial;
+                        &::after {
+                            display: none;
+                        }
                     }
 
                     > aside {
