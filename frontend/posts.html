@@ -26,7 +26,7 @@
                     grid-area: grid;
                     justify-content: flex-start;
 
-                    margin-bottom: 4em;
+                    margin-bottom: 8em;
                 }
 
                 > aside {
@@ -44,15 +44,32 @@
                 }
             }
 
-            #masstag-toggle {
+            #slideshow-menu {
+                display: none;
+
+                width: 100%;
+
+                > button.start-slideshow {
+                    width: 100%;
+                }
+            }
+
+            #mobile-menu {
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: stretch;
+                gap: 1em;
+
                 position: fixed;
-                bottom: 1em;
-                left: 1em;
+                bottom: 1rem;
+                left: 1rem;
 
-                color: transparent;
-                text-shadow: 0 0 0 var(--background);
+                > button {
+                    color: transparent;
+                    text-shadow: 0 0 0 var(--background);
 
-                box-shadow: 2px 2px 4px black;
+                    box-shadow: 2px 2px 4px black;
+                }
             }
 
             @media (min-width: 1000px) and (min-aspect-ratio: 1) {
@@ -82,8 +99,12 @@
                     }
                 }
 
-                #masstag-toggle {
+                #mobile-menu {
                     display: none;
+                }
+
+                #slideshow-menu {
+                    display: initial;
                 }
 
                 header > search {
@@ -148,8 +169,16 @@
 
             <h1>Mass Tag</h1>
             <mass-tag-menu></mass-tag-menu>
+
+            <div id="slideshow-menu">
+                <h1>Slide Show</h1>
+                <button class="start-slideshow" type="button">📽️ Start Slideshow</button>
+            </div>
         </aside>
-        <button id="masstag-toggle" type="button">🏷️</button>
+        <nav id="mobile-menu">
+            <button class="start-slideshow" type="button">📽️</button>
+            <button id="masstag-toggle" type="button">🏷️</button>
+        </nav>
 
         <script type="module" src="components/main-nav.js" async></script>
         <script type="module" src="components/search-input.js" async></script>

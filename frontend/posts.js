@@ -1,4 +1,5 @@
 import { massTag } from "./state/mass-tag.js";
+import { navigate } from "./util/search-params.js";
 
 const posts = document.getElementById("posts");
 
@@ -18,3 +19,11 @@ const tagList = document.getElementById("tags");
 posts.addEventListener("tags", (event) => {
     tagList.tags = event.detail;
 });
+
+
+const startSlideshowButtons = document.querySelectorAll(".start-slideshow");
+for(const button of startSlideshowButtons) {
+    button.addEventListener("click", () => {
+        navigate("/slideshow", {}, true);
+    });
+}
