@@ -13,7 +13,7 @@ const ReversePostTypeMap = new Map<string, PostType>(
 );
 
 export const postType = (extension: string): PostType => {
-    const type = ReversePostTypeMap.get(extension);
+    const type = ReversePostTypeMap.get(extension.toLowerCase());
     if(type == null)
         throw new Error(`Unsupported file type "${extension}"`);
     return type;
