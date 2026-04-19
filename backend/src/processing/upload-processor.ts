@@ -50,6 +50,7 @@ class UploadProcessor {
     }
 
     async process(filePath: string, extension: string, id?: string): Promise<void> {
+        extension = extension.toLowerCase();
         let type: PostType;
         try {
             type = postType(extension);

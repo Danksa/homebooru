@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # The version to update to
-VERSION="v1.3.1"
+VERSION="v1.3.3"
 
 # Some intermediary variables
 VERSION_DIR="homebooru-$VERSION"
